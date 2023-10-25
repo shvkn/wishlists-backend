@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { HashUtilityService } from '../hash-utility/hash-utility.service';
 
 @Injectable()
 export class UsersService {
@@ -19,11 +20,17 @@ export class UsersService {
       // TODO CustomException
       throw new BadRequestException();
     }
-    return this.usersRepository.save(createUserDto);
+    const hash = await HashUtilityService.hash(createUserDto.password);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...user } = await this.usersRepository.save({
+      ...createUserDto,
+      password: hash,
+    });
+    return user;
   }
 
-  async findOne(query: string) {
-    return this.usersRepository.findOne({
+  async findOne(query: string): Promise<User> | null {
+    return await this.usersRepository.findOne({
       where: [{ email: query }, { username: query }],
     });
   }

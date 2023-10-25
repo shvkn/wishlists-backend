@@ -6,9 +6,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { IsEmail, IsUrl, Length } from 'class-validator';
+import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 
-const USER_AVATAR_DEFAULT_VALUE = 'https://i.pravatar.cc/300';
-const USER_ABOUT_DEFAULT_VALUE = 'Пока ничего не рассказал о себе';
+const DefaultValues = {
+  AVATAR: 'https://i.pravatar.cc/300',
+  ABOUT: 'Пока ничего не рассказал о себе',
+};
 
 @Entity()
 export class User {
@@ -25,11 +28,11 @@ export class User {
   @Length(2, 30)
   username: string;
 
-  @Column({ default: USER_ABOUT_DEFAULT_VALUE })
+  @Column({ default: DefaultValues.ABOUT })
   @Length(2, 200)
   about: string;
 
-  @Column({ default: USER_AVATAR_DEFAULT_VALUE })
+  @Column({ default: DefaultValues.AVATAR })
   @IsUrl()
   avatar: string;
 
@@ -39,4 +42,8 @@ export class User {
 
   @Column()
   password: string;
+
+  async validatePassword(password: string) {
+    return HashUtilityService.verify(password, this.password);
+  }
 }

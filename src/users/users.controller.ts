@@ -1,7 +1,17 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -12,22 +22,24 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
-  getProfile() {
-    // TODO Auth
-    return this.usersService.findOne('MY_USERNAME');
+  getProfile(@Request() req) {
+    return req.user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch('me')
-  updateProfile(updateUserDto: UpdateUserDto) {
-    // TODO Auth
-    return this.usersService.update('MY_USERNAME', updateUserDto);
+  updateProfile(@Request() req, updateUserDto: UpdateUserDto) {
+    const username = req.user.username;
+    return this.usersService.update(username, updateUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me/wishes')
-  getWishes() {
-    // TODO Auth
-    return this.usersService.findWishes('MY_USERNAME');
+  getWishes(@Request() req) {
+    const username = req.user.username;
+    return this.usersService.findWishes(username);
   }
 
   @Get('find')
