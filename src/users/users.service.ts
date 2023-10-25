@@ -35,11 +35,11 @@ export class UsersService {
     });
   }
 
-  async findWishes(query: string) {
+  async findWithWishes(query: string) {
     return this.usersRepository.findOne({
       where: [{ email: query }, { username: query }],
       relations: {
-        /*wishes: true,*/
+        wishes: true,
       },
     });
   }

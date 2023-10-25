@@ -4,56 +4,96 @@ import {
   Get,
   Param,
   Patch,
-  Post,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { UserProfileResponseDto } from './dto/user-profile-response.dto';
+import { UserPublicResponseDto } from './dto/user-public-response.dto';
+import { Wish } from '../wishes/entities/wish.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  getProfile(@Request() req) {
-    return req.user;
+  getProfile(@Request() req: IUserRequest): UserProfileResponseDto {
+    const user = req.user;
+    return {
+      id: user.id,
+      username: user.username,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  updateProfile(@Request() req, updateUserDto: UpdateUserDto) {
+  async updateProfile(
+    @Request() req,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserProfileResponseDto> {
     const username = req.user.username;
-    return this.usersService.update(username, updateUserDto);
+    const user = await this.usersService.update(username, updateUserDto);
+    return {
+      id: user.id,
+      username: user.username,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me/wishes')
-  getWishes(@Request() req) {
+  async getWishes(@Request() req): Promise<Wish[]> {
     const username = req.user.username;
-    return this.usersService.findWishes(username);
+    const { wishes } = await this.usersService.findWithWishes(username);
+    return wishes;
   }
 
   @Get('find')
-  findUserByQuery(@Body() body: { query: string }) {
-    return this.usersService.findOne(body.query);
+  async findUserByQuery(
+    @Body() body: { query: string },
+  ): Promise<UserPublicResponseDto & { email: string }> {
+    const user = await this.usersService.findOne(body.query);
+    return {
+      id: user.id,
+      username: user.username,
+      about: user.about,
+      avatar: user.avatar,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   @Get(':username')
-  getUserByUsername(@Param('username') username: string) {
-    return this.usersService.findOne(username);
+  async getUserByUsername(
+    @Param('username') username: string,
+  ): Promise<UserPublicResponseDto> {
+    const user = await this.usersService.findOne(username);
+    return {
+      id: user.id,
+      username: user.username,
+      about: user.about,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 
   @Get(':username/wishes')
-  getUserWishes(@Param('username') username: string) {
-    return this.usersService.findWishes(username);
+  async getUserWishes(@Param('username') username: string): Promise<Wish[]> {
+    const { wishes } = await this.usersService.findWithWishes(username);
+    return wishes;
   }
 }

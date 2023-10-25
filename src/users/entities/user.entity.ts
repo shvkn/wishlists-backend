@@ -10,6 +10,7 @@ import { IsEmail, IsUrl, Length } from 'class-validator';
 import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 import { Wish } from '../../wishes/entities/wish.entity';
 import { Offer } from '../../offers/entities/offer.entity';
+import { Exclude } from 'class-transformer';
 
 const DefaultValues = {
   AVATAR: 'https://i.pravatar.cc/300',
@@ -40,10 +41,12 @@ export class User {
   avatar: string;
 
   @Column()
+  @Exclude({ toPlainOnly: true })
   @IsEmail()
   email: string;
 
   @Column()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @OneToMany(() => Wish, (wish) => wish.owner)
