@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { HashUtilityModule } from './hash-utility/hash-utility.module';
+import { WishesModule } from './wishes/wishes.module';
+import { OffersModule } from './offers/offers.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { HashUtilityModule } from './hash-utility/hash-utility.module';
     UsersModule,
     AuthModule,
     HashUtilityModule,
+    WishesModule,
+    OffersModule,
   ],
   controllers: [AppController],
   providers: [],

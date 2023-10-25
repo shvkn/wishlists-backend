@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { IsEmail, IsUrl, Length } from 'class-validator';
 import { HashUtilityService } from '../../hash-utility/hash-utility.service';
+import { Wish } from '../../wishes/entities/wish.entity';
+import { Offer } from '../../offers/entities/offer.entity';
 
 const DefaultValues = {
   AVATAR: 'https://i.pravatar.cc/300',
@@ -42,6 +45,12 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany(() => Wish, (wish) => wish.owner)
+  wishes: Wish[];
+
+  @OneToMany(() => Offer, (offer) => offer.user)
+  offers: Offer[];
 
   async validatePassword(password: string) {
     return HashUtilityService.verify(password, this.password);
