@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   register(signUpDto: SignUpUserDto): Promise<SignUpUserResponseDto> {
-    return this.usersService.create(signUpDto);
+    return this.usersService.createOne(signUpDto);
   }
 
   provideJwtTokens(user: User): SignInUserResponseDto {
@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   async validateUser(signInDto: SignInUserDto) {
-    const user = await this.usersService.findOne(signInDto.username);
+    const user = await this.usersService.findOneByQuery(signInDto.username);
     if (user && (await user?.validatePassword(signInDto.password))) {
       return user;
     }
@@ -35,6 +35,6 @@ export class AuthService {
   }
 
   async validateUserByUsername(username: string) {
-    return (await this.usersService.findOne(username)) || null;
+    return (await this.usersService.findOneByQuery(username)) || null;
   }
 }

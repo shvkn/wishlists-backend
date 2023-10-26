@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HashUtilityService } from '../hash-utility/hash-utility.service';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
 @Injectable()
 export class UsersService {
@@ -12,46 +17,53 @@ export class UsersService {
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async createOne(createUserDto: CreateUserDto) {
     const existingUser = await this.usersRepository.findOne({
       where: { username: createUserDto.username },
     });
     if (existingUser) {
-      // TODO CustomException
-      throw new BadRequestException();
+      throw new ConflictException(
+        `Пользователь с таким email или username уже зарегистрирован`,
+      );
     }
-    const hash = await HashUtilityService.hash(createUserDto.password);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...user } = await this.usersRepository.save({
-      ...createUserDto,
-      password: hash,
-    });
-    return user;
-  }
-
-  async findOne(query: string): Promise<User> | null {
-    return await this.usersRepository.findOne({
-      where: [{ email: query }, { username: query }],
-    });
-  }
-
-  async findWithWishes(query: string) {
-    return this.usersRepository.findOne({
-      where: [{ email: query }, { username: query }],
-      relations: {
-        wishes: true,
-      },
-    });
-  }
-
-  async update(query: string, updateUserDto: UpdateUserDto) {
-    const user = await this.findOne(query);
-    if (!user) {
-      throw new BadRequestException();
-    }
+    const hashedPassword = await HashUtilityService.hash(
+      createUserDto.password,
+    );
     return this.usersRepository.save({
-      ...user,
-      ...updateUserDto,
+      ...createUserDto,
+      password: hashedPassword,
+    });
+  }
+
+  async updateOne(query: string, updateUserDto: UpdateUserDto) {
+    const user = await this.findOneByQuery(query);
+    return this.usersRepository.save({ ...user, ...updateUserDto });
+  }
+
+  async findOneByQuery(
+    query: string,
+    relations?: FindOptionsRelations<User>,
+  ): Promise<User> {
+    try {
+      return await this.usersRepository.findOneOrFail({
+        where: [{ username: query }, { email: query }],
+        relations,
+      });
+    } catch (e) {
+      throw new NotFoundException(
+        `Пользователь с таким email или username не найден`,
+      );
+    }
+  }
+
+  async findManyByQuery(
+    query: string,
+    relations?: FindOptionsRelations<User>,
+  ): Promise<User[]> {
+    const template = `%${query}%`;
+    return await this.usersRepository.find({
+      where: [{ email: Like(template) }, { username: Like(template) }],
+      relations,
     });
   }
 }

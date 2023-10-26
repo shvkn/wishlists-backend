@@ -11,6 +11,7 @@ import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 import { Wish } from '../../wishes/entities/wish.entity';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Exclude } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 
 const DefaultValues = {
   AVATAR: 'https://i.pravatar.cc/300',
@@ -19,39 +20,49 @@ const DefaultValues = {
 
 @Entity()
 export class User {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;
 
+  @ApiProperty()
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @ApiProperty()
   @Column()
   @Length(2, 30)
   username: string;
 
+  @ApiProperty()
   @Column({ default: DefaultValues.ABOUT })
   @Length(2, 200)
   about: string;
 
+  @ApiProperty()
   @Column({ default: DefaultValues.AVATAR })
   @IsUrl()
   avatar: string;
 
+  @ApiProperty()
   @Column()
   @Exclude({ toPlainOnly: true })
   @IsEmail()
   email: string;
 
+  @ApiProperty()
   @Column()
   @Exclude({ toPlainOnly: true })
   password: string;
 
+  @ApiProperty()
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
 
+  @ApiProperty()
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 
