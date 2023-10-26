@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
@@ -34,6 +38,11 @@ export class WishesService {
 
   async update(id: number, updateWishDto: UpdateWishDto) {
     const wish = await this.findOne(id);
+    if (updateWishDto.price >= 0 && wish.raised > 0) {
+      throw new BadRequestException(
+        'Нельзя изменять стоимость, если уже есть желающие скинуться',
+      );
+    }
     return await this.wishesRepository.save({
       id: wish.id,
       ...updateWishDto,
