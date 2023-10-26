@@ -1,19 +1,18 @@
+import { BadRequestException } from '@nestjs/common';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNumber, IsString, IsUrl, Length, Min } from 'class-validator';
 import {
-  AfterLoad,
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
-import { IsInt, IsNumber, IsString, IsUrl, Length, Min } from 'class-validator';
+
 import { Offer } from '../../offers/entities/offer.entity';
-import { BadRequestException } from '@nestjs/common';
-import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Wish {

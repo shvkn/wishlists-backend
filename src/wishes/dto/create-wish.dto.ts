@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsNumber,
   IsString,
@@ -6,7 +7,6 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateWishDto {
   @ApiProperty()

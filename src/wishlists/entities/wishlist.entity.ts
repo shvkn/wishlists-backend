@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsUrl, Length } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -9,10 +10,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { JoinTable } from 'typeorm';
+
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
-import { IsString, IsUrl, Length } from 'class-validator';
-import { JoinTable } from 'typeorm';
 
 @Entity()
 export class Wishlist {

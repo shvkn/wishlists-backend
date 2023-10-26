@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateWishDto } from './dto/create-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Wish } from './entities/wish.entity';
 import { DataSource, Repository } from 'typeorm';
-import { User } from '../users/entities/user.entity';
-import { UpdateWishDto } from './dto/update-wish.dto';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
-import { Offer } from '../offers/entities/offer.entity';
+
+import { User } from '../users/entities/user.entity';
+import { CreateWishDto } from './dto/create-wish.dto';
+import { UpdateWishDto } from './dto/update-wish.dto';
+import { Wish } from './entities/wish.entity';
 
 @Injectable()
 export class WishesService {
@@ -51,6 +51,7 @@ export class WishesService {
     await queryRunner.startTransaction();
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { id: _, ...wish } = await this.findOne(id);
       await queryRunner.manager.save(Wish, {
         id,

@@ -1,9 +1,10 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { WishlistsService } from './wishlists.service';
-import { WishlistsController } from './wishlists.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Wishlist } from './entities/wishlist.entity';
+
 import { WishesModule } from '../wishes/wishes.module';
+import { Wishlist } from './entities/wishlist.entity';
+import { WishlistsController } from './wishlists.controller';
+import { WishlistsService } from './wishlists.service';
 
 @Module({
   imports: [

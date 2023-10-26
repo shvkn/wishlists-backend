@@ -9,11 +9,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { WishlistsService } from './wishlists.service';
-import { CreateWishlistDto } from './dto/create-wishlist.dto';
+
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { OwnerGuard } from '../guards/owner.guard';
+import { CreateWishlistDto } from './dto/create-wishlist.dto';
+import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { WishlistsService } from './wishlists.service';
 
 @Controller('wishlistlists')
 export class WishlistsController {

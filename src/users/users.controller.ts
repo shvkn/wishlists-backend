@@ -8,12 +8,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { Wish } from '../wishes/entities/wish.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserPublicResponseDto } from './dto/user-public-response.dto';
-import { Wish } from '../wishes/entities/wish.entity';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {

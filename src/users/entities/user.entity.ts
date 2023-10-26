@@ -1,3 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
+import { IsEmail, IsUrl, Length } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -6,12 +9,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { IsEmail, IsUrl, Length } from 'class-validator';
+
 import { HashUtilityService } from '../../hash-utility/hash-utility.service';
-import { Wish } from '../../wishes/entities/wish.entity';
 import { Offer } from '../../offers/entities/offer.entity';
-import { Exclude } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+import { Wish } from '../../wishes/entities/wish.entity';
 
 const DefaultValues = {
   AVATAR: 'https://i.pravatar.cc/300',
