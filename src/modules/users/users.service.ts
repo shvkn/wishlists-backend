@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
-import { HashUtilityService } from '../hash-utility/hash-utility.service';
+import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';

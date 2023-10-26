@@ -5,10 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { Wish } from '../wishes/entities/wish.entity';
-import { WishesService } from '../wishes/wishes.service';
-import { Wishlist } from '../wishlists/entities/wishlist.entity';
-import { WishlistsService } from '../wishlists/wishlists.service';
+import { Wish } from '../modules/wishes/entities/wish.entity';
+import { WishesService } from '../modules/wishes/wishes.service';
+import { Wishlist } from '../modules/wishlists/entities/wishlist.entity';
+import { WishlistsService } from '../modules/wishlists/wishlists.service';
 
 @Injectable()
 export class OwnerGuard implements CanActivate {

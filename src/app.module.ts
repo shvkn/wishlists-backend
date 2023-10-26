@@ -3,12 +3,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
-import { AuthModule } from './auth/auth.module';
 import { HashUtilityModule } from './hash-utility/hash-utility.module';
-import { OffersModule } from './offers/offers.module';
-import { UsersModule } from './users/users.module';
-import { WishesModule } from './wishes/wishes.module';
-import { WishlistsModule } from './wishlists/wishlists.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { OffersModule } from './modules/offers/offers.module';
+import { UsersModule } from './modules/users/users.module';
+import { WishesModule } from './modules/wishes/wishes.module';
+import { WishlistsModule } from './modules/wishlists/wishlists.module';
 
 @Module({
   imports: [

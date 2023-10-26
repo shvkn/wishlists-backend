@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { OwnerGuard } from '../guards/owner.guard';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { OwnerGuard } from '../../guards/owner.guard';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { WishesService } from './wishes.service';
