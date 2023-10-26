@@ -1,26 +1,90 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Wish } from './entities/wish.entity';
+import { DataSource, Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { Offer } from '../offers/entities/offer.entity';
 
 @Injectable()
 export class WishesService {
-  create(createWishDto: CreateWishDto) {
-    return 'This action adds a new wish';
+  constructor(
+    @InjectRepository(Wish) private readonly wishesRepository: Repository<Wish>,
+    private readonly dataSource: DataSource,
+  ) {}
+  async create(createWishDto: CreateWishDto, owner: User) {
+    return await this.wishesRepository.save({
+      ...createWishDto,
+      owner,
+      raised: 0,
+    });
+  }
+  async findOne(id: number, relations?: FindOptionsRelations<Wish>) {
+    try {
+      return await this.wishesRepository.findOneOrFail({
+        where: { id },
+        relations,
+      });
+    } catch (e) {
+      throw new NotFoundException(`Подарок с id: ${id} не найден`);
+    }
   }
 
-  findAll() {
-    return `This action returns all wishes`;
+  async update(id: number, updateWishDto: UpdateWishDto) {
+    const wish = await this.findOne(id);
+    return await this.wishesRepository.save({
+      id: wish.id,
+      ...updateWishDto,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wish`;
+  async delete(id: number) {
+    const wish = await this.findOne(id);
+    return this.wishesRepository.delete({ id: wish.id });
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    return `This action updates a #${id} wish`;
+  async copy(id: number, user: User) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const { id: _, ...wish } = await this.findOne(id);
+      await queryRunner.manager.save(Wish, {
+        id,
+        ...wish,
+        copied: wish.copied + 1,
+      });
+      const copiedWish = await queryRunner.manager.save(Wish, {
+        ...wish,
+        owner: user,
+        raised: 0,
+        copied: 0,
+      });
+      await queryRunner.commitTransaction();
+      return copiedWish;
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wish`;
+  async getLast(count, relations?: FindOptionsRelations<Wish>) {
+    return await this.wishesRepository.find({
+      order: { createdAt: 'DESC' },
+      take: count,
+      relations,
+    });
+  }
+
+  async getTop(count, relations?: FindOptionsRelations<Wish>) {
+    return await this.wishesRepository.find({
+      order: { copied: 'DESC' },
+      take: count,
+      relations,
+    });
   }
 }
