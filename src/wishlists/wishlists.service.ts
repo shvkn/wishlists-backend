@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -15,6 +20,7 @@ export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
     private readonly wishlistsRepository: Repository<Wishlist>,
+    @Inject(forwardRef(() => WishesService))
     private readonly wishesService: WishesService,
   ) {}
   async getAll(relations?: FindOptionsRelations<Wishlist>) {
