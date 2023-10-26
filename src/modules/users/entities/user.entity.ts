@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { HashUtilityService } from '../../../hash-utility/hash-utility.service';
+import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
