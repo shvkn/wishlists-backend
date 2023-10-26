@@ -13,6 +13,7 @@ import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { OwnerGuard } from '../guards/owner.guard';
 
 @Controller('wishes')
 export class WishesController {
@@ -51,13 +52,13 @@ export class WishesController {
       offers: true,
     });
   }
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, OwnerGuard)
   @Patch(':id')
   updateById(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+id, updateWishDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, OwnerGuard)
   @Delete(':id')
   deleteById(@Param('id') id: string) {
     return this.wishesService.delete(+id);
