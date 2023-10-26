@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -10,31 +11,37 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 import { IsNumber, Min } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class Offer {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @CreateDateColumn()
   createdAt: Date;
 
+  @ApiProperty()
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => Wish)
-  @JoinColumn()
+  @ApiProperty()
+  @ManyToOne(() => Wish)
   item: Wish;
 
+  @ApiProperty()
   @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
   amount: number;
 
+  @ApiProperty()
   @Column({ default: false })
   hidden: boolean;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ApiProperty()
+  @ManyToOne(() => User)
   user: User;
 }
