@@ -5,8 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
 import { User } from '../users/entities/user.entity';
 import { Wish } from '../wishes/entities/wish.entity';
@@ -23,36 +22,47 @@ export class WishlistsService {
     @Inject(forwardRef(() => WishesService))
     private readonly wishesService: WishesService,
   ) {}
-  async getAll(relations?: FindOptionsRelations<Wishlist>) {
-    return await this.wishlistsRepository.find({ relations });
+  async findAll(options?: FindManyOptions<Wishlist>): Promise<Wishlist[]> {
+    return await this.wishlistsRepository.find(options);
   }
 
-  async create(createWishlistDto: CreateWishlistDto, user: User) {
+  async create(
+    createWishlistDto: CreateWishlistDto,
+    user: User,
+  ): Promise<Wishlist> {
     const { itemsId, ...restCreateWishlistDto } = createWishlistDto;
-    const items: Wish[] = await Promise.all(
-      itemsId.map((itemId) => {
-        return this.wishesService.findOne(itemId);
-      }),
-    );
-    return await this.wishlistsRepository.save({
-      ...restCreateWishlistDto,
-      items,
-      owner: user,
-    });
-  }
-
-  async findOne(id: number, relations?: FindOptionsRelations<Wishlist>) {
     try {
-      return await this.wishlistsRepository.findOneOrFail({
-        where: { id },
-        relations,
+      const items: Wish[] = await Promise.all(
+        itemsId.map((itemId) => this.wishesService.findOne(itemId)),
+      );
+      return await this.wishlistsRepository.save({
+        ...restCreateWishlistDto,
+        items,
+        owner: user,
       });
     } catch (error) {
-      throw new NotFoundException(`Wishlist with id ${id} not founded`);
+      throw error;
     }
   }
 
-  async updateOne(id: number, updateWishlistDto: UpdateWishlistDto) {
+  async findOne(
+    id: number,
+    options?: FindOneOptions<Wishlist>,
+  ): Promise<Wishlist> {
+    try {
+      return await this.wishlistsRepository.findOneOrFail({
+        ...options,
+        where: { id },
+      });
+    } catch (error) {
+      throw new NotFoundException(`Вишлист с id: ${id} не найден`);
+    }
+  }
+
+  async update(
+    id: number,
+    updateWishlistDto: UpdateWishlistDto,
+  ): Promise<Wishlist> {
     const { itemsId, ...restUpdateWishlistDto } = updateWishlistDto;
     const wishlist = await this.findOne(id);
     const items: Wish[] = await Promise.all(
@@ -65,7 +75,8 @@ export class WishlistsService {
     });
   }
 
-  async deleteOne(id: number) {
-    return await this.wishlistsRepository.delete({ id });
+  async removeOne(id: number) {
+    const wishlist = await this.findOne(id);
+    return await this.wishlistsRepository.delete({ id: wishlist.id });
   }
 }
