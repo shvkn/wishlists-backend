@@ -83,7 +83,6 @@ export class Wish {
   copied: number;
 
   raiseAmount(amount: number) {
-    console.log(this.raised);
     const neededSum = this.price - this.raised;
     if (amount > neededSum) {
       throw new BadRequestException(

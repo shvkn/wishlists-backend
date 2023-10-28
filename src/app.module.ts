@@ -4,7 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './modules/auth/auth.module';
-import { HashUtilityModule } from './modules/hash-utility/hash-utility.module';
 import { OffersModule } from './modules/offers/offers.module';
 import { UsersModule } from './modules/users/users.module';
 import { WishesModule } from './modules/wishes/wishes.module';
@@ -31,7 +30,6 @@ import { WishlistsModule } from './modules/wishlists/wishlists.module';
     }),
     UsersModule,
     AuthModule,
-    HashUtilityModule,
     WishesModule,
     OffersModule,
     WishlistsModule,

@@ -20,19 +20,15 @@ export class OwnerGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const entityClassName = context.getClass();
     const request = await context.switchToHttp().getRequest();
-    const id = request.params.id;
+    const id = +request.params.id;
     const user = request.user;
     let entity: Wishlist | Wish;
     switch (entityClassName.name) {
       case 'WishlistsController':
-        entity = await this.wishlistsService.findOne(+id, {
-          owner: true,
-        });
+        entity = await this.wishlistsService.findOne(id);
         break;
       case 'WishesController':
-        entity = await this.wishesService.findOne(+id, {
-          owner: true,
-        });
+        entity = await this.wishesService.findOne(id);
         break;
       default:
         throw new Error('Error at OwnerGuard');
