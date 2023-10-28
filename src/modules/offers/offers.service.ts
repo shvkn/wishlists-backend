@@ -4,10 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
-import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { DataSource, FindManyOptions, Repository } from 'typeorm';
 
-import { User } from '../users/entities/user.entity';
+import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
@@ -20,7 +19,7 @@ export class OffersService {
     private readonly offersRepository: Repository<Offer>,
     private readonly wishesService: WishesService,
   ) {}
-  async create(createOfferDto: CreateOfferDto, user: User) {
+  async create(createOfferDto: CreateOfferDto, user: IUser) {
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     if (wish.owner.id === user.id) {
       throw new ConflictException('Нельзя скидываться себе на подарок');
@@ -30,12 +29,11 @@ export class OffersService {
     await queryRunner.startTransaction();
     try {
       wish.raiseAmount(createOfferDto.amount);
-      console.log(wish, createOfferDto.amount);
-      await queryRunner.manager.save(wish);
+      await queryRunner.manager.save(Wish, wish);
       const offer = await queryRunner.manager.save(Offer, {
         ...createOfferDto,
         item: { id: wish.id },
-        user,
+        user: { id: user.id },
       });
       await queryRunner.commitTransaction();
       return offer;
@@ -47,20 +45,18 @@ export class OffersService {
     }
   }
 
-  async getById(id: number, relations?: FindOptionsRelations<Offer>) {
-    try {
-      return await this.offersRepository.findOneOrFail({
-        where: { id },
-        relations,
-      });
-    } catch (e) {
-      throw new NotFoundException(`Offer with id: ${id} not founded`);
-    }
+  async findAll(options?: FindManyOptions<Offer>): Promise<Offer[]> {
+    return await this.offersRepository.find(options);
   }
 
-  async getAll(relations?: FindOptionsRelations<Offer>) {
-    return await this.offersRepository.find({
-      relations,
-    });
+  async findOne(id: number, options?: FindManyOptions<Offer>) {
+    try {
+      return await this.offersRepository.findOneOrFail({
+        ...options,
+        where: { id },
+      });
+    } catch (e) {
+      throw new NotFoundException(`Подарок с id: ${id} не найден`);
+    }
   }
 }

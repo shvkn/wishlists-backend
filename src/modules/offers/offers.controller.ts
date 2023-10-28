@@ -7,7 +7,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -19,24 +19,47 @@ import { OffersService } from './offers.service';
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiResponse({
+    type: Offer,
+    status: 201,
+  })
+  @ApiResponse({
+    description: 'Нельзя скидываться себе на подарок',
+    status: 409,
+  })
   async create(
     @Body() createOfferDto: CreateOfferDto,
-    @Request() req,
+    @Request() req: IUserRequest,
   ): Promise<Offer> {
     return await this.offersService.create(createOfferDto, req.user);
   }
 
   @Get()
-  async getAll(): Promise<Offer[]> {
-    return await this.offersService.getAll({ user: true, item: true });
+  @ApiResponse({
+    type: Offer,
+    isArray: true,
+    status: 200,
+  })
+  async findAll(): Promise<Offer[]> {
+    return await this.offersService.findAll({
+      relations: { user: true, item: true },
+    });
   }
 
   @Get(':id')
-  async getById(@Param('id') id: string) {
-    return await this.offersService.getById(+id, {
-      user: true,
+  @ApiResponse({
+    type: Offer,
+    status: 200,
+  })
+  @ApiResponse({
+    description: 'Подарок с id: #{id} не найден',
+    status: 404,
+  })
+  async findOne(@Param('id') id: string): Promise<Offer> {
+    return await this.offersService.findOne(+id, {
+      relations: { user: true },
     });
   }
 }
