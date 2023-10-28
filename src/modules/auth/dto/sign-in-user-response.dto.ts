@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ApiPropertiesExamples } from '../../../utils/constants';
+
 export class SignInUserResponseDto {
   @ApiProperty({
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNodmtuIiwiaWF0IjoxNjk4MzIyMzE1LCJleHAiOjE3MDM1MDYzMTV9.oCSZJ5PzVzAD9PAcoznR7PqrKZZhrPmjVWFEJD4MRwg',
+    example: ApiPropertiesExamples.Common.JWT_TOKEN,
   })
   access_token: string;
 }

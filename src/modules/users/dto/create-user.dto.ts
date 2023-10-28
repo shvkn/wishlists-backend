@@ -8,36 +8,37 @@ import {
   Length,
 } from 'class-validator';
 
+import { ApiDefaults, ApiPropertiesExamples } from '../../../utils/constants';
+
 export class CreateUserDto {
-  @ApiProperty({ example: 'user' })
+  @ApiProperty({ example: ApiPropertiesExamples.User.USERNAME })
   @IsString()
   username: string;
 
-  @ApiProperty({ example: 'user@yandex.ru' })
+  @ApiProperty({ example: ApiPropertiesExamples.User.EMAIL })
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: 'somestrongpassword',
+    example: ApiPropertiesExamples.User.PASSWORD,
   })
   @IsString()
   password: string;
 
-  // @ValidateIf((object) => object.value === '')
   @IsOptional()
   @Length(1, 200)
   @ApiProperty({
     required: false,
-    example: 'Пока ничего не рассказал о себе',
-    default: 'Пока ничего не рассказал о себе',
+    example: ApiPropertiesExamples.User.ABOUT,
+    default: ApiDefaults.User.ABOUT,
   })
   @IsString()
-  about?: string = 'Пока ничего не рассказал о себе';
+  about?: string;
 
   @ApiProperty({
     required: false,
-    example: 'https://i.pravatar.cc/3001',
-    default: 'https://i.pravatar.cc/3001',
+    example: ApiPropertiesExamples.User.AVATAR,
+    default: ApiDefaults.User.AVATAR,
   })
   @IsUrl()
   @IsOptional()

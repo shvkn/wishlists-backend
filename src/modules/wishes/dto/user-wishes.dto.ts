@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ApiPropertiesExamples } from '../../../utils/constants';
 import { Offer } from '../../offers/entities/offer.entity';
 
 export class UserWishesDto {
@@ -14,43 +15,43 @@ export class UserWishesDto {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ApiProperty({ example: 'name' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.NAME })
   @Column()
   @IsString()
   @Length(1, 250)
   name: string;
 
-  @ApiProperty({ example: 'https://market.yandex.ru/some' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.LINK })
   @Column()
   @IsUrl()
   link: string;
 
-  @ApiProperty({ example: 'https://market.yandex.ru/img' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.IMAGE })
   @Column()
   @IsUrl()
   image: string;
 
-  @ApiProperty({ example: 1000.43 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
   @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
   price: number;
 
-  @ApiProperty({ example: 400.33 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
   @Column({ default: 0 })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   raised: number;
 
-  @ApiProperty({ example: 'some description' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.DESCRIPTION })
   @Column()
   @IsString()
   @Length(1, 1024)

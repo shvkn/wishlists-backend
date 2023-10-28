@@ -12,21 +12,22 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ApiPropertiesExamples } from '../../../utils/constants';
 import { Offer } from '../../offers/entities/offer.entity';
 import { UserProfileResponseDto } from '../../users/dto/user-profile-response.dto';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Wish {
-  @ApiProperty({ example: 5 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
@@ -35,35 +36,35 @@ export class Wish {
   @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 
-  @ApiProperty({ example: 'name' })
+  @ApiProperty({ example: ApiPropertiesExamples })
   @Column()
   @IsString()
   @Length(1, 250)
   name: string;
 
-  @ApiProperty({ example: 'https://market.yandex.ru/some' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.IMAGE })
   @Column()
   @IsUrl()
   link: string;
 
-  @ApiProperty({ example: 'https://market.yandex.ru/img' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.IMAGE })
   @Column()
   @IsUrl()
   image: string;
 
-  @ApiProperty({ example: 1000.43 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
   @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
   price: number;
 
-  @ApiProperty({ example: 400.33 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
   @Column({ default: 0 })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   raised: number;
 
-  @ApiProperty({ example: 'some description' })
+  @ApiProperty({ example: ApiPropertiesExamples.Wish.DESCRIPTION })
   @Column()
   @IsString()
   @Length(1, 1024)
@@ -76,7 +77,7 @@ export class Wish {
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
-  @ApiProperty({ example: 5 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
   @Column({ default: 0 })
   @Min(0)
   @IsInt()
@@ -89,6 +90,6 @@ export class Wish {
         `Сумма взноса не должна превышать ${neededSum}`,
       );
     }
-    this.raised = (this.raised || 0) + amount;
+    this.raised += amount;
   }
 }

@@ -16,20 +16,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ApiPropertiesExamples } from '../../../utils/constants';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity()
 export class User {
-  @ApiProperty({ example: 5 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
@@ -38,27 +39,27 @@ export class User {
   @Length(2, 30)
   username: string;
 
-  @ApiProperty({ example: 'Пока ничего не рассказал о себе' })
+  @ApiProperty({ example: ApiPropertiesExamples.User.ABOUT })
   @Column({ default: 'Пока ничего не рассказал о себе' })
   @Length(2, 200)
   @IsOptional()
   @IsNotEmpty()
   about?: string;
 
-  @ApiProperty({ example: 'https://i.pravatar.cc/300' })
+  @ApiProperty({ example: ApiPropertiesExamples.User.AVATAR })
   @Column({ default: 'https://i.pravatar.cc/300' })
   @IsUrl()
   @IsOptional()
   @IsNotEmpty()
   avatar?: string;
 
-  @ApiProperty({ example: 'user@yandex.ru' })
+  @ApiProperty({ example: ApiPropertiesExamples.User.EMAIL })
   @Column()
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: 'somestrongpassword' })
+  @ApiProperty({ example: ApiPropertiesExamples.User.PASSWORD })
   @Column()
   @Exclude({ toPlainOnly: true })
   @IsNotEmpty()

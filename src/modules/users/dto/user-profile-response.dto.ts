@@ -1,31 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
-// export class UserProfileResponseDto extends OmitType(CreateUserResponseDto, [
-//   'password',
-// ] as const) {}
+import { ApiPropertiesExamples } from '../../../utils/constants';
 
 export class UserProfileResponseDto {
-  @ApiProperty({ example: 5 })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
   id: number;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   createdAt: Date;
 
-  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
+  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
   updatedAt: Date;
 
-  @ApiProperty({ example: 'user', description: 'username пользователя' })
+  @ApiProperty({
+    example: ApiPropertiesExamples.User.USERNAME,
+  })
   @IsString()
   username: string;
 
-  @ApiProperty({ example: 'user@yandex.ru', description: 'email пользователя' })
+  @ApiProperty({
+    example: ApiPropertiesExamples.User.EMAIL,
+  })
   @IsEmail()
   email: string;
 
   @ApiProperty({
     required: false,
-    example: 'Пока ничего не рассказал о себе',
+    example: ApiPropertiesExamples.User.ABOUT,
   })
   @Length(1, 200)
   @IsOptional()
@@ -34,7 +36,7 @@ export class UserProfileResponseDto {
 
   @ApiProperty({
     required: false,
-    example: 'https://i.pravatar.cc/300',
+    example: ApiPropertiesExamples.User.AVATAR,
   })
   @IsOptional()
   @IsUrl()
