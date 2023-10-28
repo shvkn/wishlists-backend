@@ -10,7 +10,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
@@ -59,8 +58,4 @@ export class User {
   @ApiProperty({ type: () => Offer, isArray: true })
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
-
-  async validatePassword(password: string) {
-    return HashUtilityService.verify(password, this.password);
-  }
 }
