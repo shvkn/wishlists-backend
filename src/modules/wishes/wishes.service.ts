@@ -1,12 +1,10 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
+import { PriceChangingIsNotAllowedException } from '../../error-exeptions/price-changing-is-not-allowed.exception';
+import { WishNotFoundedException } from '../../error-exeptions/wish-not-founded.exception';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -49,16 +47,14 @@ export class WishesService {
         },
       });
     } catch (e) {
-      throw new NotFoundException(`Подарок с id: ${id} не найден`);
+      throw new WishNotFoundedException(id);
     }
   }
 
   async update(id: number, updateWishDto: UpdateWishDto): Promise<Wish> {
     const wish = await this.findOne(id);
     if (updateWishDto.price >= 0 && wish.raised > 0) {
-      throw new ConflictException(
-        'Нельзя изменять стоимость, если уже есть желающие скинуться',
-      );
+      throw new PriceChangingIsNotAllowedException();
     }
     return await this.wishesRepository.save({
       id: wish.id,
@@ -83,10 +79,8 @@ export class WishesService {
 
     try {
       const wish = await this.findOne(id);
-      await queryRunner.manager.save(Wish, {
-        ...wish,
-        copied: wish.copied + 1,
-      });
+      wish.increaseCopied();
+      await queryRunner.manager.save(Wish, wish);
       const copiedWish = await queryRunner.manager.create(Wish, {
         ...wish,
         owner: { id: user.id },
@@ -94,9 +88,9 @@ export class WishesService {
       await queryRunner.manager.save(Wish, copiedWish);
       await queryRunner.commitTransaction();
       return copiedWish;
-    } catch (e) {
+    } catch (error) {
       await queryRunner.rollbackTransaction();
-      throw e;
+      throw error;
     } finally {
       await queryRunner.release();
     }

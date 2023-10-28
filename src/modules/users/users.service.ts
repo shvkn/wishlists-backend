@@ -1,11 +1,9 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Like, Repository } from 'typeorm';
 
+import { UserExistsException } from '../../error-exeptions/user-exists.exception';
+import { UserNotFoundedException } from '../../error-exeptions/user-not-founded.exception';
 import { hash } from '../../utils/hash-utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserResponseDto } from './dto/create-user-response.dto';
@@ -24,9 +22,7 @@ export class UsersService {
       where: { username: createUserDto.username },
     });
     if (existingUser) {
-      throw new ConflictException(
-        `Пользователь с таким email или username уже зарегистрирован`,
-      );
+      throw new UserExistsException();
     }
     return this.usersRepository.save({
       ...createUserDto,
@@ -61,9 +57,7 @@ export class UsersService {
         where: [{ username: query }, { email: query }],
       });
     } catch (e) {
-      throw new NotFoundException(
-        `Пользователь с таким email или username не найден`,
-      );
+      throw new UserNotFoundedException();
     }
   }
 

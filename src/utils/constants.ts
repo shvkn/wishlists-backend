@@ -28,15 +28,11 @@ export const ApiPropertiesExamples = {
   Offer: {
     hidden: false,
   },
-};
+} as const;
 
 export const ApiDefaults = {
   User: {
     ABOUT: 'Пока ничего не рассказал о себе',
     AVATAR: 'https://i.pravatar.cc/3001',
   },
-
-  Wish: {
-    COPIED: 0,
-  },
-};
+} as const;

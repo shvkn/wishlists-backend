@@ -1,4 +1,3 @@
-import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 import { IsInt, IsNumber, IsString, IsUrl, Length, Min } from 'class-validator';
@@ -12,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { IncorrectAmountException } from '../../../error-exeptions/incorrect-amount.exception';
 import { ApiPropertiesExamples } from '../../../utils/constants';
 import { Offer } from '../../offers/entities/offer.entity';
 import { UserProfileResponseDto } from '../../users/dto/user-profile-response.dto';
@@ -86,10 +86,14 @@ export class Wish {
   raiseAmount(amount: number) {
     const neededSum = this.price - this.raised;
     if (amount > neededSum) {
-      throw new BadRequestException(
+      throw new IncorrectAmountException(
         `Сумма взноса не должна превышать ${neededSum}`,
       );
     }
     this.raised += amount;
+  }
+
+  increaseCopied() {
+    this.copied += 1;
   }
 }

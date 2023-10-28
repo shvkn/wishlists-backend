@@ -1,11 +1,9 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
 
+import { OfferOnSelfWishException } from '../../error-exeptions/offer-on-self-wish.exception';
+import { WishNotFoundedException } from '../../error-exeptions/wish-not-founded.exception';
 import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -22,7 +20,7 @@ export class OffersService {
   async create(createOfferDto: CreateOfferDto, user: IUser) {
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     if (wish.owner.id === user.id) {
-      throw new ConflictException('Нельзя скидываться себе на подарок');
+      throw new OfferOnSelfWishException();
     }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -56,7 +54,7 @@ export class OffersService {
         where: { id },
       });
     } catch (e) {
-      throw new NotFoundException(`Подарок с id: ${id} не найден`);
+      throw new WishNotFoundedException(id);
     }
   }
 }

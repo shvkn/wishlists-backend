@@ -1,12 +1,8 @@
-import {
-  forwardRef,
-  Inject,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
+import { WishlistNotFoundedException } from '../../error-exeptions/wishlist-not-founded.exception';
 import { User } from '../users/entities/user.entity';
 import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
@@ -55,7 +51,7 @@ export class WishlistsService {
         where: { id },
       });
     } catch (error) {
-      throw new NotFoundException(`Вишлист с id: ${id} не найден`);
+      throw new WishlistNotFoundedException(id);
     }
   }
 

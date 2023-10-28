@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 
+import { NotOwnerException } from '../error-exeptions/NotOwner.exception';
 import { Wish } from '../modules/wishes/entities/wish.entity';
 import { WishesService } from '../modules/wishes/wishes.service';
 import { Wishlist } from '../modules/wishlists/entities/wishlist.entity';
@@ -23,6 +24,7 @@ export class OwnerGuard implements CanActivate {
     const id = +request.params.id;
     const user = request.user;
     let entity: Wishlist | Wish;
+
     switch (entityClassName.name) {
       case 'WishlistsController':
         entity = await this.wishlistsService.findOne(id);
@@ -31,11 +33,11 @@ export class OwnerGuard implements CanActivate {
         entity = await this.wishesService.findOne(id);
         break;
       default:
-        throw new Error('Error at OwnerGuard');
+        throw new BadRequestException('OwnerGuard used improperly');
     }
     if (entity && user && entity.owner.id === user.id) {
       return true;
     }
-    throw new UnauthorizedException('Access denied');
+    throw new NotOwnerException();
   }
 }
