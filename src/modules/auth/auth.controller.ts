@@ -30,6 +30,7 @@ export class AuthController {
   async signup(
     @Body() signUpDto: SignUpUserDto,
   ): Promise<SignUpUserResponseDto> {
+    console.log(signUpDto);
     return await this.authService.register(signUpDto);
   }
 

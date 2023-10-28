@@ -10,11 +10,11 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,
+      // whitelist: true,
+      // skipMissingProperties: true,
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-
   const config = new DocumentBuilder()
     .setTitle('Kupipodariday API')
     .setDescription('API сервиса вишлистов')

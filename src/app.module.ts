@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
+import { ExcludeBlankStringsMiddleware } from './middlewares/exclude-blank-strings.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { OffersModule } from './modules/offers/offers.module';
 import { UsersModule } from './modules/users/users.module';
@@ -37,4 +43,10 @@ import { WishlistsModule } from './modules/wishlists/wishlists.module';
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): any {
+    consumer
+      .apply(ExcludeBlankStringsMiddleware)
+      .forRoutes({ path: 'signup', method: RequestMethod.POST });
+  }
+}

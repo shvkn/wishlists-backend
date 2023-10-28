@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-import { IsEmail, IsUrl, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsUrl,
+  Length,
+} from 'class-validator';
 import {
   Column,
   CreateDateColumn,
@@ -35,20 +41,27 @@ export class User {
   @ApiProperty({ example: 'Пока ничего не рассказал о себе' })
   @Column({ default: 'Пока ничего не рассказал о себе' })
   @Length(2, 200)
-  about: string;
+  @IsOptional()
+  @IsNotEmpty()
+  about?: string;
 
   @ApiProperty({ example: 'https://i.pravatar.cc/300' })
   @Column({ default: 'https://i.pravatar.cc/300' })
   @IsUrl()
-  avatar: string;
+  @IsOptional()
+  @IsNotEmpty()
+  avatar?: string;
 
   @ApiProperty({ example: 'user@yandex.ru' })
   @Column()
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ example: 'somestrongpassword' })
   @Column()
   @Exclude({ toPlainOnly: true })
+  @IsNotEmpty()
   password: string;
 
   @ApiProperty({ type: () => Wish, isArray: true })
