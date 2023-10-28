@@ -1,23 +1,15 @@
-import { BadRequestException } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
-import { IsInt, IsNumber, IsString, IsUrl, Length, Min } from 'class-validator';
+import { IsNumber, IsString, IsUrl, Length, Min } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { Offer } from '../../offers/entities/offer.entity';
-import { UserProfileResponseDto } from '../../users/dto/user-profile-response.dto';
-import { User } from '../../users/entities/user.entity';
 
-@Entity()
-export class Wish {
+export class UserWishesDto {
   @ApiProperty({ example: 5 })
   @PrimaryGeneratedColumn()
   id: number;
@@ -29,11 +21,6 @@ export class Wish {
   @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @ApiProperty({ type: () => UserProfileResponseDto })
-  @Expose({ toPlainOnly: true })
-  @ManyToOne(() => User, (user) => user.wishes)
-  owner: User;
 
   @ApiProperty({ example: 'name' })
   @Column()
@@ -69,27 +56,6 @@ export class Wish {
   @Length(1, 1024)
   description: string;
 
-  @ApiProperty({
-    type: () => Offer,
-    isArray: true,
-  })
-  @OneToMany(() => Offer, (offer) => offer.item)
+  @ApiProperty({ type: () => Offer, isArray: true })
   offers: Offer[];
-
-  @ApiProperty({ example: 5 })
-  @Column({ default: 0 })
-  @Min(0)
-  @IsInt()
-  copied: number;
-
-  raiseAmount(amount: number) {
-    console.log(this.raised);
-    const neededSum = this.price - this.raised;
-    if (amount > neededSum) {
-      throw new BadRequestException(
-        `Сумма взноса не должна превышать ${neededSum}`,
-      );
-    }
-    this.raised = (this.raised || 0) + amount;
-  }
 }

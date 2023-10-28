@@ -1,22 +1,50 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
 import { AuthService } from './auth.service';
+import { SignInUserDto } from './dto/sign-in-user.dto';
 import { SignInUserResponseDto } from './dto/sign-in-user-response.dto';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { SignUpUserResponseDto } from './dto/sign-up-user-response.dto';
 
+@ApiTags('auth')
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  signup(@Body() signUpDto: SignUpUserDto): Promise<SignUpUserResponseDto> {
-    return this.authService.register(signUpDto);
+  @ApiCreatedResponse({
+    type: SignUpUserResponseDto,
+  })
+  @ApiConflictResponse({
+    description: 'Пользователь с таким email или username уже зарегистрирован',
+  })
+  async signup(
+    @Body() signUpDto: SignUpUserDto,
+  ): Promise<SignUpUserResponseDto> {
+    return await this.authService.register(signUpDto);
   }
 
-  @UseGuards(LocalAuthGuard)
   @Post('signin')
+  @UseGuards(LocalAuthGuard)
+  @ApiBody({
+    type: SignInUserDto,
+  })
+  @ApiResponse({
+    type: SignInUserResponseDto,
+    status: 201,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Некорректная пара логин и пароль',
+  })
   signin(@Request() req): SignInUserResponseDto {
     return this.authService.provideJwtTokens(req.user);
   }

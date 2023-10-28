@@ -1,9 +1,3 @@
-export class SignUpUserResponseDto {
-  id: number;
-  username: string;
-  about: string;
-  avatar: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { CreateUserResponseDto } from '../../users/dto/create-user-response.dto';
+
+export class SignUpUserResponseDto extends CreateUserResponseDto {}

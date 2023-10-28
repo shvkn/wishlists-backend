@@ -9,6 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OwnerGuard } from '../../guards/owner.guard';
@@ -16,6 +17,7 @@ import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { WishesService } from './wishes.service';
 
+@ApiTags('wishes')
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
@@ -48,10 +50,7 @@ export class WishesController {
 
   @Get(':id')
   getById(@Param('id') id: string) {
-    return this.wishesService.findOne(+id, {
-      owner: true,
-      offers: true,
-    });
+    return this.wishesService.findOne(+id);
   }
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @Patch(':id')

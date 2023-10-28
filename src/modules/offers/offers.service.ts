@@ -21,9 +21,7 @@ export class OffersService {
     private readonly wishesService: WishesService,
   ) {}
   async create(createOfferDto: CreateOfferDto, user: User) {
-    const wish = await this.wishesService.findOne(createOfferDto.itemId, {
-      owner: true,
-    });
+    const wish = await this.wishesService.findOne(createOfferDto.itemId);
     if (wish.owner.id === user.id) {
       throw new ConflictException('Нельзя скидываться себе на подарок');
     }
@@ -32,6 +30,7 @@ export class OffersService {
     await queryRunner.startTransaction();
     try {
       wish.raiseAmount(createOfferDto.amount);
+      console.log(wish, createOfferDto.amount);
       await queryRunner.manager.save(wish);
       const offer = await queryRunner.manager.save(Offer, {
         ...createOfferDto,

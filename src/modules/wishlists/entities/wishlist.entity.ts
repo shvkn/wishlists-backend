@@ -40,10 +40,12 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
+  @ApiProperty({ type: () => User })
   @OneToOne(() => User)
   @JoinColumn()
   owner: User;
 
+  @ApiProperty({ type: () => Wish })
   @ManyToMany(() => Wish)
   @JoinTable()
   items: Wish[];

@@ -1,9 +1,42 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
+
+// export class UserProfileResponseDto extends OmitType(CreateUserResponseDto, [
+//   'password',
+// ] as const) {}
+
 export class UserProfileResponseDto {
+  @ApiProperty({ example: 5 })
   id: number;
-  username: string;
-  about: string;
-  avatar: string;
-  email: string;
+
+  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
   createdAt: Date;
+
+  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
   updatedAt: Date;
+
+  @ApiProperty({ example: 'user', description: 'username пользователя' })
+  @IsString()
+  username: string;
+
+  @ApiProperty({ example: 'user@yandex.ru', description: 'email пользователя' })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    required: false,
+    example: 'Пока ничего не рассказал о себе',
+  })
+  @Length(1, 200)
+  @IsOptional()
+  @IsString()
+  about?: string;
+
+  @ApiProperty({
+    required: false,
+    example: 'https://i.pravatar.cc/300',
+  })
+  @IsOptional()
+  @IsUrl()
+  avatar?: string;
 }

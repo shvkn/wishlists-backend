@@ -25,12 +25,30 @@ export class WishesService {
       raised: 0,
     });
   }
-  async findOne(id: number, relations?: FindOptionsRelations<Wish>) {
+  async findOne(id: number) {
     try {
-      return await this.wishesRepository.findOneOrFail({
+      const wish = await this.wishesRepository.findOneOrFail({
+        select: {
+          owner: {
+            id: true,
+            username: true,
+            about: true,
+            avatar: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          offers: true,
+        },
         where: { id },
-        relations,
+        relations: {
+          owner: true,
+          offers: {
+            user: true,
+          },
+        },
       });
+
+      return wish;
     } catch (e) {
       throw new NotFoundException(`Подарок с id: ${id} не найден`);
     }

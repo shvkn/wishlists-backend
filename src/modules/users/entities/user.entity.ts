@@ -14,56 +14,49 @@ import { HashUtilityService } from '../../hash-utility/hash-utility.service';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
-const DefaultValues = {
-  AVATAR: 'https://i.pravatar.cc/300',
-  ABOUT: 'Пока ничего не рассказал о себе',
-};
-
 @Entity()
 export class User {
-  @ApiProperty()
+  @ApiProperty({ example: 5 })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: '2023-10-27T05:54:49.597Z' })
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'username' })
   @Column()
   @Length(2, 30)
   username: string;
 
-  @ApiProperty()
-  @Column({ default: DefaultValues.ABOUT })
+  @ApiProperty({ example: 'Пока ничего не рассказал о себе' })
+  @Column({ default: 'Пока ничего не рассказал о себе' })
   @Length(2, 200)
   about: string;
 
-  @ApiProperty()
-  @Column({ default: DefaultValues.AVATAR })
+  @ApiProperty({ example: 'https://i.pravatar.cc/300' })
+  @Column({ default: 'https://i.pravatar.cc/300' })
   @IsUrl()
   avatar: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'user@yandex.ru' })
   @Column()
-  @Exclude({ toPlainOnly: true })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
   @Column()
   @Exclude({ toPlainOnly: true })
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: () => Wish, isArray: true })
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];
 
-  @ApiProperty()
+  @ApiProperty({ type: () => Offer, isArray: true })
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 

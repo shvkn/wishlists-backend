@@ -4,12 +4,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
-import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { FindOneOptions, Like, Repository } from 'typeorm';
 
-import { HashUtilityService } from '../hash-utility/hash-utility.service';
+import { hash } from '../../utils/hash-utils';
 import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserResponseDto } from './dto/create-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class UsersService {
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
-  async createOne(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<CreateUserResponseDto> {
     const existingUser = await this.usersRepository.findOne({
       where: { username: createUserDto.username },
     });
@@ -27,28 +28,37 @@ export class UsersService {
         `Пользователь с таким email или username уже зарегистрирован`,
       );
     }
-    const hashedPassword = await HashUtilityService.hash(
-      createUserDto.password,
-    );
     return this.usersRepository.save({
       ...createUserDto,
-      password: hashedPassword,
+      password: hash(createUserDto.password),
     });
   }
 
-  async updateOne(query: string, updateUserDto: UpdateUserDto) {
-    const user = await this.findOneByQuery(query);
-    return this.usersRepository.save({ ...user, ...updateUserDto });
+  async update(
+    query: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserProfileResponseDto> {
+    const user = await this.findOne(query);
+    const updated = await this.usersRepository.save({
+      ...user,
+      ...updateUserDto,
+    });
+    return {
+      id: updated.id,
+      createdAt: updated.createdAt,
+      updatedAt: updated.updatedAt,
+      username: updated.username,
+      email: updated.email,
+      avatar: updated.avatar,
+      about: updated.about,
+    };
   }
 
-  async findOneByQuery(
-    query: string,
-    relations?: FindOptionsRelations<User>,
-  ): Promise<User> {
+  async findOne(query: string, options?: FindOneOptions<User>): Promise<User> {
     try {
       return await this.usersRepository.findOneOrFail({
+        ...options,
         where: [{ username: query }, { email: query }],
-        relations,
       });
     } catch (e) {
       throw new NotFoundException(
@@ -57,14 +67,14 @@ export class UsersService {
     }
   }
 
-  async findManyByQuery(
+  async findMany(
     query: string,
-    relations?: FindOptionsRelations<User>,
-  ): Promise<User[]> {
+    options?: FindOneOptions<User>,
+  ): Promise<UserProfileResponseDto[]> {
     const template = `%${query}%`;
     return await this.usersRepository.find({
+      ...options,
       where: [{ email: Like(template) }, { username: Like(template) }],
-      relations,
     });
   }
 }

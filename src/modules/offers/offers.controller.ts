@@ -7,12 +7,14 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { OffersService } from './offers.service';
 
+@ApiTags('offers')
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
