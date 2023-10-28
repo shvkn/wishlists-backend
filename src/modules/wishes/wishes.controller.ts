@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Request,
@@ -77,8 +79,14 @@ export class WishesController {
     description: 'Подарок с id: #{id} не найден',
     status: 404,
   })
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
+  findOne(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return this.wishesService.findOne(id);
   }
 
   @Patch(':id')
@@ -97,10 +105,14 @@ export class WishesController {
     status: 404,
   })
   update(
-    @Param('id') id: string,
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
     @Body() updateWishDto: UpdateWishDto,
   ): Promise<Wish> {
-    return this.wishesService.update(+id, updateWishDto);
+    return this.wishesService.update(id, updateWishDto);
   }
 
   @Delete(':id')
@@ -114,8 +126,14 @@ export class WishesController {
     description: 'Подарок с id: #{id} не найден',
     status: 404,
   })
-  delete(@Param('id') id: string): Promise<Wish> {
-    return this.wishesService.delete(+id);
+  delete(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ): Promise<Wish> {
+    return this.wishesService.delete(id);
   }
 
   @Post(':id/copy')
@@ -129,7 +147,14 @@ export class WishesController {
     description: 'Подарок с id: #{id} не найден',
     status: 404,
   })
-  copyWish(@Param('id') id: string, @Request() req: IUserRequest) {
-    return this.wishesService.copy(+id, req.user);
+  copyWish(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+    @Request() req: IUserRequest,
+  ) {
+    return this.wishesService.copy(id, req.user);
   }
 }

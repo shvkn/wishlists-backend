@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Request,
   UseGuards,
@@ -57,8 +59,14 @@ export class OffersController {
     description: 'Подарок с id: #{id} не найден',
     status: 404,
   })
-  async findOne(@Param('id') id: string): Promise<Offer> {
-    return await this.offersService.findOne(+id, {
+  async findOne(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ): Promise<Offer> {
+    return await this.offersService.findOne(id, {
       relations: { user: true },
     });
   }

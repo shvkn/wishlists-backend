@@ -3,7 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Request,
@@ -58,8 +60,14 @@ export class WishlistsController {
     description: 'Вишлист с id: #{id} не найден',
     status: 404,
   })
-  findOne(@Param('id') id: string): Promise<Wishlist> {
-    return this.wishlistsService.findOne(+id, {
+  findOne(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ): Promise<Wishlist> {
+    return this.wishlistsService.findOne(id, {
       relations: {
         owner: true,
         items: true,
@@ -79,10 +87,14 @@ export class WishlistsController {
     status: 404,
   })
   update(
-    @Param('id') id: string,
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
   ): Promise<Wishlist> {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.update(id, updateWishlistDto);
   }
 
   @Delete(':id')
@@ -96,7 +108,13 @@ export class WishlistsController {
     description: 'Вишлист с id: #{id} не найден',
     status: 404,
   })
-  removeOne(@Param('id') id: string) {
-    return this.wishlistsService.removeOne(+id);
+  removeOne(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return this.wishlistsService.removeOne(id);
   }
 }
