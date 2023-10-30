@@ -35,10 +35,11 @@ export class UsersService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
     const user = await this.findOne(query);
-    const updated = await this.usersRepository.save({
-      ...user,
-      ...updateUserDto,
-    });
+    if (updateUserDto.password?.length > 0) {
+      updateUserDto.password = hash(updateUserDto.password);
+    }
+    await this.usersRepository.update({ id: user.id }, updateUserDto);
+    const updated = await this.findOne(query);
     return {
       id: updated.id,
       createdAt: updated.createdAt,
