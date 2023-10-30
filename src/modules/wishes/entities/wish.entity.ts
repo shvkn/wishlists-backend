@@ -17,7 +17,7 @@ import { Offer } from '../../offers/entities/offer.entity';
 import { UserProfileResponseDto } from '../../users/dto/user-profile-response.dto';
 import { User } from '../../users/entities/user.entity';
 
-@Entity()
+@Entity({ name: 'wishes' })
 export class Wish {
   @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
   @PrimaryGeneratedColumn()
@@ -61,7 +61,7 @@ export class Wish {
   @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
   @VirtualColumn({
     query: (alias) =>
-      `SELECT ROUND(SUM("amount"), 2) FROM "offer" WHERE "itemId" = ${alias}.id`,
+      `SELECT ROUND(SUM("amount"), 2) FROM "offers" WHERE "itemId" = ${alias}.id`,
   })
   raised: number;
 
@@ -85,6 +85,6 @@ export class Wish {
   copied: number;
 
   increaseCopied() {
-    this.copied += 1;
+    this.copied = (this.copied || 0) + 1;
   }
 }

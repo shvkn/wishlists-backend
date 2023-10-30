@@ -16,7 +16,7 @@ import { ApiPropertiesExamples } from '../../../utils/constants';
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
-@Entity()
+@Entity({ name: 'wishlists' })
 export class Wishlist {
   @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
   @PrimaryGeneratedColumn()
