@@ -9,9 +9,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  VirtualColumn,
 } from 'typeorm';
 
-import { IncorrectAmountException } from '../../../error-exeptions/incorrect-amount.exception';
 import { ApiPropertiesExamples } from '../../../utils/constants';
 import { Offer } from '../../offers/entities/offer.entity';
 import { UserProfileResponseDto } from '../../users/dto/user-profile-response.dto';
@@ -59,9 +59,10 @@ export class Wish {
   price: number;
 
   @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
-  @Column({ default: 0 })
-  @IsNumber({ maxDecimalPlaces: 2 })
-  @Min(0)
+  @VirtualColumn({
+    query: (alias) =>
+      `SELECT ROUND(SUM("amount"), 2) FROM "offer" WHERE "itemId" = ${alias}.id`,
+  })
   raised: number;
 
   @ApiProperty({ example: ApiPropertiesExamples.Wish.DESCRIPTION })
@@ -82,16 +83,6 @@ export class Wish {
   @Min(0)
   @IsInt()
   copied: number;
-
-  raiseAmount(amount: number) {
-    const neededSum = this.price - this.raised;
-    if (amount > neededSum) {
-      throw new IncorrectAmountException(
-        `Сумма взноса не должна превышать ${neededSum}`,
-      );
-    }
-    this.raised += amount;
-  }
 
   increaseCopied() {
     this.copied += 1;

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
 
+import { IncorrectAmountException } from '../../error-exeptions/incorrect-amount.exception';
 import { OfferOnSelfWishException } from '../../error-exeptions/offer-on-self-wish.exception';
 import { WishNotFoundedException } from '../../error-exeptions/wish-not-founded.exception';
-import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
@@ -22,12 +22,16 @@ export class OffersService {
     if (wish.owner.id === user.id) {
       throw new OfferOnSelfWishException();
     }
+    const neededSum = wish.price - wish.raised;
+    if (createOfferDto.amount > neededSum) {
+      throw new IncorrectAmountException(
+        `Сумма взноса не должна превышать ${neededSum}`,
+      );
+    }
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      wish.raiseAmount(createOfferDto.amount);
-      await queryRunner.manager.save(Wish, wish);
       const offer = await queryRunner.manager.save(Offer, {
         ...createOfferDto,
         item: { id: wish.id },
