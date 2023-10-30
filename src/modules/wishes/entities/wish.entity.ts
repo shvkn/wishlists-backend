@@ -9,7 +9,6 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  VirtualColumn,
 } from 'typeorm';
 
 import { ApiPropertiesExamples } from '../../../utils/constants';
@@ -59,10 +58,9 @@ export class Wish {
   price: number;
 
   @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
-  @VirtualColumn({
-    query: (alias) =>
-      `SELECT COALESCE(ROUND(SUM("amount"), 2), 0) FROM "offers" WHERE "itemId" = ${alias}.id`,
-  })
+  @Column()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
   raised: number;
 
   @ApiProperty({ example: ApiPropertiesExamples.Wish.DESCRIPTION })

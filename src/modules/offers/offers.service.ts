@@ -5,6 +5,7 @@ import { DataSource, FindManyOptions, Repository } from 'typeorm';
 import { IncorrectAmountException } from '../../error-exeptions/incorrect-amount.exception';
 import { OfferOnSelfWishException } from '../../error-exeptions/offer-on-self-wish.exception';
 import { WishNotFoundedException } from '../../error-exeptions/wish-not-founded.exception';
+import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
@@ -32,11 +33,13 @@ export class OffersService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const offer = await queryRunner.manager.save(Offer, {
+      const offer = await queryRunner.manager.create(Offer, {
         ...createOfferDto,
         item: { id: wish.id },
         user: { id: user.id },
       });
+      await queryRunner.manager.save<Offer>(offer);
+      await queryRunner.manager.save<Wish>(wish);
       await queryRunner.commitTransaction();
       return offer;
     } catch (error) {
