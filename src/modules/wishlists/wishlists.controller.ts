@@ -21,8 +21,10 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
 import { WishlistsService } from './wishlists.service';
 
-@ApiTags(SwaggerTags.WISHLISTS)
 @Controller('wishlistlists')
+@ApiTags(SwaggerTags.WISHLISTS)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
@@ -42,8 +44,6 @@ export class WishlistsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: Wishlist,
     status: 201,
@@ -77,8 +77,7 @@ export class WishlistsController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, OwnerGuard)
-  @ApiBearerAuth()
+  @UseGuards(OwnerGuard)
   @ApiResponse({
     type: Wishlist,
     status: 200,
@@ -99,8 +98,7 @@ export class WishlistsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, OwnerGuard)
-  @ApiBearerAuth()
+  @UseGuards(OwnerGuard)
   @ApiResponse({
     type: Wishlist,
     status: 200,

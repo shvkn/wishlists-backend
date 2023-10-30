@@ -21,8 +21,8 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
 
-@ApiTags(SwaggerTags.WISHES)
 @Controller('wishes')
+@ApiTags(SwaggerTags.WISHES)
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
@@ -71,6 +71,8 @@ export class WishesController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiResponse({
     type: Wish,
     isArray: true,

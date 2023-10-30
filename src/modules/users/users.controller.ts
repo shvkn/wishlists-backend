@@ -20,14 +20,14 @@ import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserPublicResponseDto } from './dto/user-public-response.dto';
 import { UsersService } from './users.service';
 
-@ApiTags(SwaggerTags.USERS)
 @Controller('users')
+@ApiTags(SwaggerTags.USERS)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: UserProfileResponseDto,
     status: 200,
@@ -47,8 +47,6 @@ export class UsersController {
   }
 
   @Patch('me')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: UserProfileResponseDto,
     status: 200,
@@ -78,8 +76,6 @@ export class UsersController {
   }
 
   @Get('me/wishes')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: Wish,
     isArray: true,
@@ -94,8 +90,6 @@ export class UsersController {
   }
 
   @Get(':username')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: UserPublicResponseDto,
     isArray: true,
@@ -116,8 +110,6 @@ export class UsersController {
   }
 
   @Get(':username/wishes')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: UserWishesDto,
     isArray: true,
@@ -133,8 +125,6 @@ export class UsersController {
   }
 
   @Post('find')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiResponse({
     type: UserProfileResponseDto,
     isArray: true,

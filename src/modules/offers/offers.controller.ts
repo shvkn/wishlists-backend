@@ -9,7 +9,7 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { SwaggerTags } from '../../utils/constants';
@@ -17,13 +17,14 @@ import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { OffersService } from './offers.service';
 
-@ApiTags(SwaggerTags.OFFERS)
 @Controller('offers')
+@ApiTags(SwaggerTags.OFFERS)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiResponse({
     type: Offer,
     status: 201,
