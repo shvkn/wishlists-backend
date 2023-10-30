@@ -78,12 +78,16 @@ export class WishesService {
     await queryRunner.startTransaction();
 
     try {
-      const wish = await this.findOne(id);
-      wish.increaseCopied();
-      await queryRunner.manager.save(Wish, wish);
+      const { id: wishId, copied, ...wish } = await this.findOne(id);
+      await queryRunner.manager.save(Wish, {
+        id: wishId,
+        wish,
+        copied: copied + 1,
+      });
       const copiedWish = await queryRunner.manager.create(Wish, {
         ...wish,
         owner: { id: user.id },
+        copied: copied + 1,
       });
       await queryRunner.manager.save(Wish, copiedWish);
       await queryRunner.commitTransaction();

@@ -83,8 +83,4 @@ export class Wish {
   @Min(0)
   @IsInt()
   copied: number;
-
-  increaseCopied() {
-    this.copied = (this.copied || 0) + 1;
-  }
 }
