@@ -31,7 +31,7 @@ import { WishlistsModule } from './modules/wishlists/wishlists.module';
         database: configService.get('DB_DATABASE'),
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
-        synchronize: true /*TODO dev\prod mode*/,
+        synchronize: true,
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
