@@ -19,7 +19,10 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto): Promise<CreateUserResponseDto> {
     const existingUser = await this.usersRepository.findOne({
-      where: { username: createUserDto.username },
+      where: [
+        { username: createUserDto.username },
+        { email: createUserDto.email },
+      ],
     });
     if (existingUser) {
       throw new UserExistsException();
