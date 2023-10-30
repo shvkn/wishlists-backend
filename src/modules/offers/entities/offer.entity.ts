@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsNumber, Min } from 'class-validator';
 import {
   Column,
@@ -42,6 +43,7 @@ export class Offer {
   hidden: boolean;
 
   @ApiProperty({ type: () => User })
+  @Transform((params) => (params.obj.hidden ? '' : params.obj.user))
   @ManyToOne(() => User)
   user: User;
 }
