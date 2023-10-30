@@ -78,16 +78,26 @@ export class WishesService {
     await queryRunner.startTransaction();
 
     try {
-      const { id: wishId, copied, ...wish } = await this.findOne(id);
-      await queryRunner.manager.save(Wish, {
+      const {
         id: wishId,
-        wish,
-        copied: copied + 1,
-      });
-      const copiedWish = await queryRunner.manager.create(Wish, {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        createdAt,
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        updatedAt,
+        copied,
+        ...wish
+      } = await this.findOne(id);
+      await queryRunner.manager.update(
+        Wish,
+        { id: wishId },
+        {
+          copied: copied + 1,
+        },
+      );
+      const copiedWish = queryRunner.manager.create(Wish, {
         ...wish,
         owner: { id: user.id },
-        copied: copied + 1,
+        copied: 0,
       });
       await queryRunner.manager.save(Wish, copiedWish);
       await queryRunner.commitTransaction();
