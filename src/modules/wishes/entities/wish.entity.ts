@@ -61,7 +61,7 @@ export class Wish {
   @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
   @VirtualColumn({
     query: (alias) =>
-      `SELECT ROUND(SUM("amount"), 2) FROM "offers" WHERE "itemId" = ${alias}.id`,
+      `SELECT COALESCE(ROUND(SUM("amount"), 2), 0) FROM "offers" WHERE "itemId" = ${alias}.id`,
   })
   raised: number;
 
