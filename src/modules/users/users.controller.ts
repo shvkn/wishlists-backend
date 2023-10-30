@@ -11,6 +11,7 @@ import {
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { SwaggerTags } from '../../utils/constants';
 import { UserWishesDto } from '../wishes/dto/user-wishes.dto';
 import { Wish } from '../wishes/entities/wish.entity';
 import { FindUserDto } from './dto/find-user.dto';
@@ -19,7 +20,7 @@ import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserPublicResponseDto } from './dto/user-public-response.dto';
 import { UsersService } from './users.service';
 
-@ApiTags('users')
+@ApiTags(SwaggerTags.USERS)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

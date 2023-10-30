@@ -9,13 +9,14 @@ import {
 } from '@nestjs/swagger';
 
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
+import { SwaggerTags } from '../../utils/constants';
 import { AuthService } from './auth.service';
 import { SignInUserDto } from './dto/sign-in-user.dto';
 import { SignInUserResponseDto } from './dto/sign-in-user-response.dto';
 import { SignUpUserDto } from './dto/sign-up-user.dto';
 import { SignUpUserResponseDto } from './dto/sign-up-user-response.dto';
 
-@ApiTags('auth')
+@ApiTags(SwaggerTags.AUTH)
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

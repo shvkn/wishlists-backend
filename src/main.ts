@@ -1,8 +1,16 @@
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppModule } from './app.module';
+import {
+  SWAGGER_API_DESCRIPTION,
+  SWAGGER_API_PATH,
+  SWAGGER_API_TITLE,
+  SWAGGER_VERSION,
+  SwaggerTags,
+} from './utils/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,24 +18,25 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
-      // whitelist: true,
-      // skipMissingProperties: true,
+      whitelist: true,
+      skipMissingProperties: true,
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   const config = new DocumentBuilder()
-    .setTitle('Kupipodariday API')
-    .setDescription('API сервиса вишлистов')
-    .setVersion('1.0')
-    .addTag('auth')
-    .addTag('users')
-    .addTag('wishes')
-    .addTag('offers')
-    .addTag('wishlists')
+    .setTitle(SWAGGER_API_TITLE)
+    .setDescription(SWAGGER_API_DESCRIPTION)
+    .setVersion(SWAGGER_VERSION)
+    .addTag(SwaggerTags.AUTH)
+    .addTag(SwaggerTags.USERS)
+    .addTag(SwaggerTags.WISHES)
+    .addTag(SwaggerTags.OFFERS)
+    .addTag(SwaggerTags.WISHLISTS)
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup(SWAGGER_API_PATH, app, document);
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
   await app.listen(3001);
 }
 bootstrap();

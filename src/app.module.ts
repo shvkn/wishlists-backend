@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 
 import { AppController } from './app.controller';
 import { ExcludeBlankStringsMiddleware } from './middlewares/exclude-blank-strings.middleware';
@@ -33,6 +35,19 @@ import { WishlistsModule } from './modules/wishlists/wishlists.module';
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
+    }),
+    WinstonModule.forRoot({
+      levels: {
+        critical_error: 0,
+        error: 1,
+        special_warning: 2,
+        another_log_level: 3,
+        info: 4,
+      },
+      transports: [
+        new winston.transports.Console({ format: winston.format.simple() }),
+        new winston.transports.File({ filename: 'error.log', level: 'error' }),
+      ],
     }),
     UsersModule,
     AuthModule,

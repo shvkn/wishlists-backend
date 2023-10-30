@@ -15,12 +15,13 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OwnerGuard } from '../../guards/owner.guard';
+import { SwaggerTags } from '../../utils/constants';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
 
-@ApiTags('wishes')
+@ApiTags(SwaggerTags.WISHES)
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}

@@ -12,11 +12,12 @@ import {
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
+import { SwaggerTags } from '../../utils/constants';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { OffersService } from './offers.service';
 
-@ApiTags('offers')
+@ApiTags(SwaggerTags.OFFERS)
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
