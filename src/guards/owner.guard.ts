@@ -4,11 +4,10 @@ import {
   ExecutionContext,
   Injectable,
 } from '@nestjs/common';
+import { ModuleRef, Reflector } from '@nestjs/core';
 
 import { NotOwnerException } from '../error-exeptions/NotOwner.exception';
-import { Wish } from '../modules/wishes/entities/wish.entity';
 import { WishesService } from '../modules/wishes/wishes.service';
-import { Wishlist } from '../modules/wishlists/entities/wishlist.entity';
 import { WishlistsService } from '../modules/wishlists/wishlists.service';
 
 @Injectable()
@@ -16,26 +15,33 @@ export class OwnerGuard implements CanActivate {
   constructor(
     private readonly wishlistsService: WishlistsService,
     private readonly wishesService: WishesService,
+    private readonly moduleRef: ModuleRef,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const entityClassName = context.getClass();
     const request = await context.switchToHttp().getRequest();
     const id = +request.params.id;
     const user = request.user;
-    let entity: Wishlist | Wish;
 
-    switch (entityClassName.name) {
-      case 'WishlistsController':
-        entity = await this.wishlistsService.findOne(id);
-        break;
-      case 'WishesController':
-        entity = await this.wishesService.findOne(id);
-        break;
-      default:
-        throw new BadRequestException('OwnerGuard used improperly');
+    const contextClass = context.getClass();
+    const featureName = contextClass.name.replace('Controller', '');
+    const controllerDeps = Reflect.getMetadata(
+      'design:paramtypes',
+      contextClass,
+    );
+    const serviceRef = controllerDeps.find((dep) => {
+      return dep.name?.match(featureName + 'Service');
+    });
+    const service = this.moduleRef.get(serviceRef, { strict: false });
+    const entity = await service.findOne(id);
+
+    if (!entity.owner) {
+      throw new BadRequestException(
+        `Wrong using of OwnerGuard. Entity "${featureName}" has no owner parameter.`,
+      );
     }
-    if (entity && user && entity.owner.id === user.id) {
+    if (user?.id && entity.owner.id === user.id) {
       return true;
     }
     throw new NotOwnerException();
