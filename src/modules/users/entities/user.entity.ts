@@ -35,7 +35,7 @@ export class User {
   updatedAt: Date;
 
   @ApiProperty({ example: 'username' })
-  @Column()
+  @Column({ unique: true })
   @Length(2, 30)
   username: string;
 
@@ -54,7 +54,7 @@ export class User {
   avatar?: string;
 
   @ApiProperty({ example: ApiPropertiesExamples.User.EMAIL })
-  @Column()
+  @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()
   email: string;
