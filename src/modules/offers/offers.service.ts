@@ -4,7 +4,7 @@ import { DataSource, FindManyOptions, Repository } from 'typeorm';
 
 import { IncorrectAmountException } from '../../error-exeptions/incorrect-amount.exception';
 import { OfferOnSelfWishException } from '../../error-exeptions/offer-on-self-wish.exception';
-import { WishNotFoundedException } from '../../error-exeptions/wish-not-founded.exception';
+import { WishNotFoundException } from '../../error-exeptions/wish-not-found.exception';
 import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -61,7 +61,7 @@ export class OffersService {
         where: { id },
       });
     } catch (e) {
-      throw new WishNotFoundedException(id);
+      throw new WishNotFoundException(id);
     }
   }
 }

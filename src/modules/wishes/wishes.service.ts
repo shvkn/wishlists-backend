@@ -4,7 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
 
 import { PriceChangingIsNotAllowedException } from '../../error-exeptions/price-changing-is-not-allowed.exception';
-import { WishNotFoundedException } from '../../error-exeptions/wish-not-founded.exception';
+import { WishNotFoundException } from '../../error-exeptions/wish-not-found.exception';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -20,7 +20,6 @@ export class WishesService {
     return await this.wishesRepository.save({
       ...createWishDto,
       owner: { id: owner.id },
-      raised: 0,
     });
   }
 
@@ -47,7 +46,7 @@ export class WishesService {
         },
       });
     } catch (e) {
-      throw new WishNotFoundedException(id);
+      throw new WishNotFoundException(id);
     }
   }
 
@@ -56,20 +55,14 @@ export class WishesService {
     if (updateWishDto.price >= 0 && wish.raised > 0) {
       throw new PriceChangingIsNotAllowedException();
     }
-    return await this.wishesRepository.save({
-      id: wish.id,
-      ...updateWishDto,
-    });
+    await this.wishesRepository.update(wish.id, updateWishDto);
+    return await this.findOne(id);
   }
 
   async delete(id: number): Promise<Wish> {
-    try {
-      const wish = await this.findOne(id);
-      await this.wishesRepository.delete({ id: wish.id });
-      return wish;
-    } catch (e) {
-      throw new Error(e);
-    }
+    const wish = await this.findOne(id);
+    await this.wishesRepository.delete(wish.id);
+    return wish;
   }
 
   async copy(id: number, user: IUser): Promise<Wish> {
@@ -84,22 +77,15 @@ export class WishesService {
         createdAt,
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         updatedAt,
-        copied,
         ...wish
       } = await this.findOne(id);
-      await queryRunner.manager.update(
-        Wish,
-        { id: wishId },
-        {
-          copied: copied + 1,
-        },
-      );
+      await queryRunner.manager.increment(Wish, wishId, 'copied', 1);
       const copiedWish = queryRunner.manager.create(Wish, {
         ...wish,
         owner: { id: user.id },
         copied: 0,
       });
-      await queryRunner.manager.save(Wish, copiedWish);
+      await queryRunner.manager.insert(Wish, copiedWish);
       await queryRunner.commitTransaction();
       return copiedWish;
     } catch (error) {
