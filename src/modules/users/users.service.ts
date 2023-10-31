@@ -42,8 +42,8 @@ export class UsersService {
       if (updateUserDto.password?.length > 0) {
         updateUserDto.password = hash(updateUserDto.password);
       }
-      await this.usersRepository.update({ id: user.id }, updateUserDto);
       const updated = await this.findOne(query);
+      await this.usersRepository.save({ id: user.id, ...updateUserDto });
       return {
         id: updated.id,
         createdAt: updated.createdAt,
@@ -75,5 +75,9 @@ export class UsersService {
       { email: Like(template) },
       { username: Like(template) },
     ]);
+  }
+
+  async findOneById(id: number) {
+    return await this.usersRepository.findOneByOrFail({ id });
   }
 }

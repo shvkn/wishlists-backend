@@ -21,7 +21,7 @@ export class AuthService {
   }
 
   provideJwtTokens(user: User): SignInUserResponseDto {
-    const payload: IJwtPayload = { username: user.username };
+    const payload: IJwtPayload = { userId: user.id };
     const accessToken = this.jwtService.sign(payload);
     return {
       access_token: accessToken,
@@ -36,7 +36,7 @@ export class AuthService {
     return null;
   }
 
-  async validateUserByUsername(username: string) {
-    return (await this.usersService.findOne(username)) || null;
+  async validateUserById(id: number) {
+    return (await this.usersService.findOneById(id)) || null;
   }
 }

@@ -1,5 +1,5 @@
 declare interface IJwtPayload {
-  username: string;
+  userId: number;
 }
 
 declare interface IUser {
