@@ -19,15 +19,15 @@ import { User } from '../../users/entities/user.entity';
 @Entity({ name: 'wishes' })
 export class Wish {
   @ApiProperty({ example: SwaggerExamples.Common.ID })
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({ type: () => UserProfileResponseDto })
@@ -36,37 +36,37 @@ export class Wish {
   owner: User;
 
   @ApiProperty({ example: SwaggerExamples })
-  @Column()
   @IsString()
   @Length(1, 250)
+  @Column({ name: 'name' })
   name: string;
 
   @ApiProperty({ example: SwaggerExamples.Wish.IMAGE })
-  @Column()
   @IsUrl()
+  @Column({ name: 'link' })
   link: string;
 
   @ApiProperty({ example: SwaggerExamples.Wish.IMAGE })
-  @Column()
   @IsUrl()
+  @Column({ name: 'image' })
   image: string;
 
   @ApiProperty({ example: SwaggerExamples.Common.CURRENCY })
-  @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
+  @Column({ name: 'price' })
   price: number;
 
   @ApiProperty({ example: SwaggerExamples.Common.CURRENCY })
-  @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
+  @Column({ name: 'raised', default: 0 })
   raised: number;
 
   @ApiProperty({ example: SwaggerExamples.Wish.DESCRIPTION })
-  @Column()
   @IsString()
   @Length(1, 1024)
+  @Column({ name: 'description' })
   description: string;
 
   @ApiProperty({
@@ -77,8 +77,8 @@ export class Wish {
   offers: Offer[];
 
   @ApiProperty({ example: SwaggerExamples.Common.ID })
-  @Column({ default: 0 })
   @Min(0)
   @IsInt()
+  @Column({ name: 'copied', default: 0 })
   copied: number;
 }

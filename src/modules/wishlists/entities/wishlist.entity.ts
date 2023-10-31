@@ -19,35 +19,35 @@ import { Wish } from '../../wishes/entities/wish.entity';
 @Entity({ name: 'wishlists' })
 export class Wishlist {
   @ApiProperty({ example: SwaggerExamples.Common.ID })
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({ example: SwaggerExamples.Wishlist.NAME })
-  @Column()
   @IsString()
   @Length(1, 250)
+  @Column({ name: 'name' })
   name: string;
 
   @ApiProperty({ example: SwaggerExamples.Wishlist.IMAGE })
-  @Column()
   @IsUrl()
+  @Column({ name: 'image' })
   image: string;
 
   @ApiProperty({ type: () => User })
   @OneToOne(() => User)
-  @JoinColumn()
+  @JoinColumn({ name: 'owner_id' })
   owner: User;
 
   @ApiProperty({ type: () => Wish })
   @ManyToMany(() => Wish)
-  @JoinTable()
+  @JoinTable({ name: 'wishlists_items_wishes' })
   items: Wish[];
 }

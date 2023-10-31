@@ -1,9 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-import { UserExistsException } from '../../error-exeptions/user-exists.exception';
-import { UserNotFoundedException } from '../../error-exeptions/user-not-founded.exception';
+import { UserExistsException } from '../../error-exceptions/user-exists.exception';
+import { UserNotFoundedException } from '../../error-exceptions/user-not-founded.exception';
 import { hash } from '../../utils/hash-utils';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserResponseDto } from './dto/create-user-response.dto';
@@ -34,16 +36,18 @@ export class UsersService {
   }
 
   async update(
-    query: string,
+    options: FindOneOptions<User>,
     updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
     try {
-      const user = await this.findOne(query);
+      const user = await this.findOne(options);
       if (updateUserDto.password?.length > 0) {
         updateUserDto.password = hash(updateUserDto.password);
       }
-      const updated = await this.findOne(query);
-      await this.usersRepository.save({ id: user.id, ...updateUserDto });
+      await this.usersRepository.update(user.id, updateUserDto);
+      const updated = await this.findOne({
+        where: { id: user.id },
+      });
       return {
         id: updated.id,
         createdAt: updated.createdAt,
@@ -54,30 +58,21 @@ export class UsersService {
         about: updated.about,
       };
     } catch (e) {
-      throw new BadRequestException(e.detail);
+      throw new BadRequestException(e.message);
     }
   }
 
-  async findOne(query: string, options?: FindOneOptions<User>): Promise<User> {
+  async findOne(options: FindOneOptions<User>): Promise<User> {
     try {
-      return await this.usersRepository.findOneOrFail({
-        ...options,
-        where: [{ username: query }, { email: query }],
-      });
+      return await this.usersRepository.findOneOrFail(options);
     } catch (e) {
       throw new UserNotFoundedException();
     }
   }
 
-  async findMany(query: string): Promise<UserProfileResponseDto[]> {
-    const template = `%${query}%`;
-    return await this.usersRepository.findBy([
-      { email: Like(template) },
-      { username: Like(template) },
-    ]);
-  }
-
-  async findOneById(id: number) {
-    return await this.usersRepository.findOneByOrFail({ id });
+  async findMany(
+    options?: FindManyOptions<User>,
+  ): Promise<UserProfileResponseDto[]> {
+    return await this.usersRepository.find(options);
   }
 }

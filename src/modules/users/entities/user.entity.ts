@@ -23,46 +23,46 @@ import { Wish } from '../../wishes/entities/wish.entity';
 @Entity({ name: 'users' })
 export class User {
   @ApiProperty({ example: SwaggerExamples.Common.ID })
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({ example: 'username' })
-  @Column({ unique: true })
   @Length(2, 30)
+  @Column({ unique: true })
   username: string;
 
   @ApiProperty({ example: SwaggerExamples.User.ABOUT })
-  @Column({ default: 'Пока ничего не рассказал о себе' })
   @Length(2, 200)
   @IsOptional()
   @IsNotEmpty()
+  @Column({ name: 'about', default: 'Пока ничего не рассказал о себе' })
   about?: string;
 
   @ApiProperty({ example: SwaggerExamples.User.AVATAR })
-  @Column({ default: 'https://i.pravatar.cc/300' })
   @IsUrl()
   @IsOptional()
   @IsNotEmpty()
+  @Column({ name: 'avatar', default: 'https://i.pravatar.cc/300' })
   avatar?: string;
 
   @ApiProperty({ example: SwaggerExamples.User.EMAIL })
-  @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()
+  @Column({ name: 'email', unique: true })
   email: string;
 
   @ApiProperty({ example: SwaggerExamples.User.PASSWORD })
-  @Column()
   @Exclude({ toPlainOnly: true })
   @IsNotEmpty()
+  @Column({ name: 'password' })
   password: string;
 
   @ApiProperty({ type: () => Wish, isArray: true })

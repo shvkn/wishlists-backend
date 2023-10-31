@@ -17,15 +17,15 @@ import { Wish } from '../../wishes/entities/wish.entity';
 @Entity({ name: 'offers' })
 export class Offer {
   @ApiProperty({ example: SwaggerExamples.Common.ID })
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
   @ApiProperty({ type: () => Wish })
@@ -33,13 +33,13 @@ export class Offer {
   item: Wish;
 
   @ApiProperty({ example: SwaggerExamples.Common.CURRENCY })
-  @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
+  @Column({ name: 'amount' })
   amount: number;
 
   @ApiProperty({ example: false })
-  @Column({ default: false })
+  @Column({ name: 'hidden', default: false })
   hidden: boolean;
 
   @ApiProperty({ type: () => User })

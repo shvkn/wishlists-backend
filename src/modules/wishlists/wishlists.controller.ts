@@ -26,6 +26,8 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
 import { WishlistsService } from './wishlists.service';
 
+const WISHLIST_NOT_FOUNDED = 'Вишлист с id = #{ID} не найден';
+
 @Controller('wishlistlists')
 @ApiTags(SwaggerTags.WISHLISTS)
 @UseGuards(JwtAuthGuard)
@@ -34,10 +36,7 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Get()
-  @ApiOkResponse({
-    type: Wishlist,
-    isArray: true,
-  })
+  @ApiOkResponse({ type: Wishlist, isArray: true })
   findAll(): Promise<Wishlist[]> {
     return this.wishlistsService.findAll({
       relations: {
@@ -48,9 +47,7 @@ export class WishlistsController {
   }
 
   @Post()
-  @ApiCreatedResponse({
-    type: Wishlist,
-  })
+  @ApiCreatedResponse({ type: Wishlist })
   create(
     @Body() createWishlistDto: CreateWishlistDto,
     @AuthorizedUser() user,
@@ -59,17 +56,11 @@ export class WishlistsController {
   }
 
   @Get(':id')
-  @ApiOkResponse({
-    type: Wishlist,
-  })
-  @ApiNotFoundResponse({
-    description: 'Вишлист с id: #{id} не найден',
-  })
-  findOne(
-    @Param('id', ParseIntPipe)
-    id: number,
-  ): Promise<Wishlist> {
-    return this.wishlistsService.findOne(id, {
+  @ApiOkResponse({ type: Wishlist })
+  @ApiNotFoundResponse({ description: WISHLIST_NOT_FOUNDED })
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Wishlist> {
+    return this.wishlistsService.findOne({
+      where: { id },
       relations: {
         owner: true,
         items: true,
@@ -79,32 +70,20 @@ export class WishlistsController {
 
   @Patch(':id')
   @UseGuards(OwnerGuard)
-  @ApiOkResponse({
-    type: Wishlist,
-  })
-  @ApiNotFoundResponse({
-    description: 'Вишлист с id: #{id} не найден',
-  })
+  @ApiOkResponse({ type: Wishlist })
+  @ApiNotFoundResponse({ description: WISHLIST_NOT_FOUNDED })
   update(
-    @Param('id', ParseIntPipe)
-    id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
   ): Promise<Wishlist> {
-    return this.wishlistsService.update(id, updateWishlistDto);
+    return this.wishlistsService.update({ where: { id } }, updateWishlistDto);
   }
 
   @Delete(':id')
   @UseGuards(OwnerGuard)
-  @ApiOkResponse({
-    type: Wishlist,
-  })
-  @ApiNotFoundResponse({
-    description: 'Вишлист с id: #{id} не найден',
-  })
-  removeOne(
-    @Param('id', ParseIntPipe)
-    id: number,
-  ): Promise<Wishlist> {
-    return this.wishlistsService.removeOne(id);
+  @ApiOkResponse({ type: Wishlist })
+  @ApiNotFoundResponse({ description: WISHLIST_NOT_FOUNDED })
+  removeOne(@Param('id', ParseIntPipe) id: number): Promise<Wishlist> {
+    return this.wishlistsService.removeOne({ where: { id } });
   }
 }

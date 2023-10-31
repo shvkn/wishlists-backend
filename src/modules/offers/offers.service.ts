@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-import { IncorrectAmountException } from '../../error-exeptions/incorrect-amount.exception';
-import { OfferOnSelfWishException } from '../../error-exeptions/offer-on-self-wish.exception';
-import { WishNotFoundException } from '../../error-exeptions/wish-not-found.exception';
+import { IncorrectAmountException } from '../../error-exceptions/incorrect-amount.exception';
+import { OfferNotFoundException } from '../../error-exceptions/offer-not-found.exception';
+import { OfferOnSelfWishException } from '../../error-exceptions/offer-on-self-wish.exception';
 import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -20,7 +21,9 @@ export class OffersService {
   ) {}
 
   async create(createOfferDto: CreateOfferDto, user: IUser) {
-    const wish = await this.wishesService.findOne(createOfferDto.itemId);
+    const wish = await this.wishesService.findOne({
+      where: { id: createOfferDto.itemId },
+    });
     if (wish.owner.id === user.id) {
       throw new OfferOnSelfWishException();
     }
@@ -58,14 +61,11 @@ export class OffersService {
     return await this.offersRepository.find(options);
   }
 
-  async findOne(id: number, options?: FindManyOptions<Offer>) {
+  async findOne(options: FindOneOptions<Offer>) {
     try {
-      return await this.offersRepository.findOneOrFail({
-        ...options,
-        where: { id },
-      });
+      return await this.offersRepository.findOneOrFail(options);
     } catch (e) {
-      throw new WishNotFoundException(id);
+      throw new OfferNotFoundException();
     }
   }
 }

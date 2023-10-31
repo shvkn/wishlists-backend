@@ -27,6 +27,11 @@ import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
 
+const WISH_NOT_FOUNDED = 'Подарок с id = #{ID} не найден';
+
+const PRICE_CHANGING_IS_NOT_ALLOWED =
+  'Нельзя изменять стоимость, если уже есть желающие скинуться';
+
 @Controller('wishes')
 @ApiTags(SwaggerTags.WISHES)
 export class WishesController {
@@ -35,9 +40,7 @@ export class WishesController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({
-    type: Wish,
-  })
+  @ApiCreatedResponse({ type: Wish })
   create(
     @Body() createWishDto: CreateWishDto,
     @AuthorizedUser() user,
@@ -46,31 +49,33 @@ export class WishesController {
   }
 
   @Get('last')
-  @ApiOkResponse({
-    type: Wish,
-    isArray: true,
-  })
+  @ApiOkResponse({ type: Wish, isArray: true })
   findLast(): Promise<Wish[]> {
     const LIMIT = 20;
-    return this.wishesService.findLast(LIMIT, {
-      owner: true,
-      offers: {
-        user: true,
+    return this.wishesService.findMany({
+      order: { createdAt: 'DESC' },
+      take: LIMIT,
+      relations: {
+        owner: true,
+        offers: {
+          user: true,
+        },
       },
     });
   }
 
   @Get('top')
-  @ApiOkResponse({
-    type: Wish,
-    isArray: true,
-  })
+  @ApiOkResponse({ type: Wish, isArray: true })
   findTop(): Promise<Wish[]> {
     const LIMIT = 40;
-    return this.wishesService.findTop(LIMIT, {
-      owner: true,
-      offers: {
-        user: true,
+    return this.wishesService.findMany({
+      order: { copied: 'DESC' },
+      take: LIMIT,
+      relations: {
+        owner: true,
+        offers: {
+          user: true,
+        },
       },
     });
   }
@@ -78,70 +83,43 @@ export class WishesController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({
-    type: Wish,
-    isArray: true,
-  })
-  @ApiNotFoundResponse({
-    description: 'Подарок с id: #{id} не найден',
-  })
-  findOne(
-    @Param('id', ParseIntPipe)
-    id: number,
-  ): Promise<Wish> {
-    return this.wishesService.findOne(id);
+  @ApiOkResponse({ type: Wish, isArray: true })
+  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Wish> {
+    return this.wishesService.findOne({ where: { id } });
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({
-    type: Wish,
-  })
-  @ApiBadRequestResponse({
-    description: 'Нельзя изменять стоимость, если уже есть желающие скинуться',
-  })
-  @ApiNotFoundResponse({
-    description: 'Подарок с id: #{id} не найден',
-  })
+  @ApiOkResponse({ type: Wish })
+  @ApiBadRequestResponse({ description: PRICE_CHANGING_IS_NOT_ALLOWED })
+  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
   update(
-    @Param('id', ParseIntPipe)
-    id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateWishDto: UpdateWishDto,
   ): Promise<Wish> {
-    return this.wishesService.update(id, updateWishDto);
+    return this.wishesService.update({ where: { id } }, updateWishDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({
-    type: Wish,
-  })
-  @ApiNotFoundResponse({
-    description: 'Подарок с id: #{id} не найден',
-  })
-  delete(
-    @Param('id', ParseIntPipe)
-    id: number,
-  ): Promise<Wish> {
-    return this.wishesService.delete(id);
+  @ApiOkResponse({ type: Wish })
+  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
+  delete(@Param('id', ParseIntPipe) id: number): Promise<Wish> {
+    return this.wishesService.delete({ where: { id } });
   }
 
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({
-    type: Wish,
-  })
-  @ApiNotFoundResponse({
-    description: 'Подарок с id: #{id} не найден',
-  })
+  @ApiCreatedResponse({ type: Wish })
+  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
   copyWish(
-    @Param('id', ParseIntPipe)
-    id: number,
-    @AuthorizedUser() user,
+    @Param('id', ParseIntPipe) id: number,
+    @AuthorizedUser('userId') userId,
   ): Promise<Wish> {
-    return this.wishesService.copy(id, user);
+    return this.wishesService.copy({ where: { id } }, userId);
   }
 }

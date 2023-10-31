@@ -31,12 +31,8 @@ export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
-  @ApiCreatedResponse({
-    type: Offer,
-  })
-  @ApiBadRequestResponse({
-    description: 'Нельзя скидываться себе на подарок',
-  })
+  @ApiCreatedResponse({ type: Offer })
+  @ApiBadRequestResponse({ description: 'Нельзя скидываться себе на подарок' })
   async create(
     @Body() createOfferDto: CreateOfferDto,
     @AuthorizedUser() user,
@@ -45,10 +41,7 @@ export class OffersController {
   }
 
   @Get()
-  @ApiOkResponse({
-    type: Offer,
-    isArray: true,
-  })
+  @ApiOkResponse({ type: Offer, isArray: true })
   async findAll(): Promise<Offer[]> {
     return await this.offersService.findAll({
       relations: { user: true, item: true },
@@ -56,17 +49,11 @@ export class OffersController {
   }
 
   @Get(':id')
-  @ApiOkResponse({
-    type: Offer,
-  })
-  @ApiNotFoundResponse({
-    description: 'Подарок с id: #{id} не найден',
-  })
-  async findOne(
-    @Param('id', ParseIntPipe)
-    id: number,
-  ): Promise<Offer> {
-    return await this.offersService.findOne(id, {
+  @ApiOkResponse({ type: Offer })
+  @ApiNotFoundResponse({ description: 'Подарок не найден' })
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Offer> {
+    return await this.offersService.findOne({
+      where: { id },
       relations: { user: true },
     });
   }

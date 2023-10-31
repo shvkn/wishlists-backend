@@ -4,7 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './filters/http-exception.filter';
 import {
   SWAGGER_API_DESCRIPTION,
   SWAGGER_API_PATH,
@@ -23,7 +22,6 @@ async function bootstrap() {
     }),
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  app.useGlobalFilters(new HttpExceptionFilter());
   const config = new DocumentBuilder()
     .setTitle(SWAGGER_API_TITLE)
     .setDescription(SWAGGER_API_DESCRIPTION)

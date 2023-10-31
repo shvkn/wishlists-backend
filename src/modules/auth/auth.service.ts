@@ -29,7 +29,9 @@ export class AuthService {
   }
 
   async validateUser(signInDto: SignInUserDto) {
-    const user = await this.usersService.findOne(signInDto.username);
+    const user = await this.usersService.findOne({
+      where: { username: signInDto.username },
+    });
     if (user && (await compare(signInDto.password, user.password))) {
       return user;
     }
@@ -37,6 +39,6 @@ export class AuthService {
   }
 
   async validateUserById(id: number) {
-    return (await this.usersService.findOneById(id)) || null;
+    return (await this.usersService.findOne({ where: { id } })) || null;
   }
 }

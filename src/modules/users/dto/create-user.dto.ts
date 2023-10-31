@@ -13,6 +13,7 @@ import { SwaggerExamples } from '../../../utils/swagger.constants';
 export class CreateUserDto {
   @ApiProperty({ example: SwaggerExamples.User.USERNAME })
   @IsString()
+  @Length(2, 30)
   username: string;
 
   @ApiProperty({ example: SwaggerExamples.User.EMAIL })

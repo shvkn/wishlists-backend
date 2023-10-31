@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { FindOptionsRelations } from 'typeorm/find-options/FindOptionsRelations';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-import { PriceChangingIsNotAllowedException } from '../../error-exeptions/price-changing-is-not-allowed.exception';
-import { WishNotFoundException } from '../../error-exeptions/wish-not-found.exception';
+import { PriceChangingIsNotAllowedException } from '../../error-exceptions/price-changing-is-not-allowed.exception';
+import { WishNotFoundException } from '../../error-exceptions/wish-not-found.exception';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -23,49 +24,33 @@ export class WishesService {
     });
   }
 
-  async findOne(id: number): Promise<Wish> {
+  async findOne(options: FindOneOptions<Wish>): Promise<Wish> {
     try {
-      return await this.wishesRepository.findOneOrFail({
-        select: {
-          owner: {
-            id: true,
-            username: true,
-            about: true,
-            avatar: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-          offers: true,
-        },
-        where: { id },
-        relations: {
-          owner: true,
-          offers: {
-            user: true,
-          },
-        },
-      });
+      return await this.wishesRepository.findOneOrFail(options);
     } catch (e) {
-      throw new WishNotFoundException(id);
+      throw new WishNotFoundException();
     }
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto): Promise<Wish> {
-    const wish = await this.findOne(id);
+  async update(
+    options: FindOneOptions<Wish>,
+    updateWishDto: UpdateWishDto,
+  ): Promise<Wish> {
+    const wish = await this.findOne(options);
     if (updateWishDto.price >= 0 && wish.raised > 0) {
       throw new PriceChangingIsNotAllowedException();
     }
     await this.wishesRepository.update(wish.id, updateWishDto);
-    return await this.findOne(id);
+    return await this.findOne(options);
   }
 
-  async delete(id: number): Promise<Wish> {
-    const wish = await this.findOne(id);
+  async delete(options: FindOneOptions<Wish>): Promise<Wish> {
+    const wish = await this.findOne(options);
     await this.wishesRepository.delete(wish.id);
     return wish;
   }
 
-  async copy(id: number, user: IUser): Promise<Wish> {
+  async copy(options: FindOneOptions<Wish>, userId: number): Promise<Wish> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -73,17 +58,20 @@ export class WishesService {
     try {
       const {
         id: wishId,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        createdAt,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        updatedAt,
-        ...wish
-      } = await this.findOne(id);
+        name,
+        link,
+        image,
+        price,
+        description,
+      } = await this.findOne(options);
       await queryRunner.manager.increment(Wish, wishId, 'copied', 1);
       const copiedWish = queryRunner.manager.create(Wish, {
-        ...wish,
-        owner: { id: user.id },
-        copied: 0,
+        name,
+        link,
+        image,
+        price,
+        description,
+        owner: { id: userId },
       });
       await queryRunner.manager.insert(Wish, copiedWish);
       await queryRunner.commitTransaction();
@@ -96,25 +84,7 @@ export class WishesService {
     }
   }
 
-  async findLast(
-    count,
-    relations?: FindOptionsRelations<Wish>,
-  ): Promise<Wish[]> {
-    return await this.wishesRepository.find({
-      order: { createdAt: 'DESC' },
-      take: count,
-      relations,
-    });
-  }
-
-  async findTop(
-    count,
-    relations?: FindOptionsRelations<Wish>,
-  ): Promise<Wish[]> {
-    return await this.wishesRepository.find({
-      order: { copied: 'DESC' },
-      take: count,
-      relations,
-    });
+  async findMany(options?: FindManyOptions<Wish>) {
+    return await this.wishesRepository.find(options);
   }
 }
