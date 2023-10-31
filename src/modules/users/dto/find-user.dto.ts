@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, MinLength } from 'class-validator';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class FindUserDto {
   @ApiProperty({
-    example: ApiPropertiesExamples.Common.QUERY,
+    example: SwaggerExamples.Common.QUERY,
   })
   @IsString()
   @MinLength(1)

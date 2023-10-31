@@ -16,21 +16,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 import { Offer } from '../../offers/entities/offer.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity({ name: 'users' })
 export class User {
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
@@ -39,27 +39,27 @@ export class User {
   @Length(2, 30)
   username: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.ABOUT })
+  @ApiProperty({ example: SwaggerExamples.User.ABOUT })
   @Column({ default: 'Пока ничего не рассказал о себе' })
   @Length(2, 200)
   @IsOptional()
   @IsNotEmpty()
   about?: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.AVATAR })
+  @ApiProperty({ example: SwaggerExamples.User.AVATAR })
   @Column({ default: 'https://i.pravatar.cc/300' })
   @IsUrl()
   @IsOptional()
   @IsNotEmpty()
   avatar?: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.EMAIL })
+  @ApiProperty({ example: SwaggerExamples.User.EMAIL })
   @Column({ unique: true })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.PASSWORD })
+  @ApiProperty({ example: SwaggerExamples.User.PASSWORD })
   @Column()
   @Exclude({ toPlainOnly: true })
   @IsNotEmpty()

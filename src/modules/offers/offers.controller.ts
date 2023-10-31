@@ -2,17 +2,23 @@ import {
   Body,
   Controller,
   Get,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { SwaggerTags } from '../../utils/constants';
+import { SwaggerTags } from '../../utils/swagger.constants';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { OffersService } from './offers.service';
@@ -25,26 +31,23 @@ export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
-  @ApiResponse({
+  @ApiCreatedResponse({
     type: Offer,
-    status: 201,
   })
-  @ApiResponse({
+  @ApiBadRequestResponse({
     description: 'Нельзя скидываться себе на подарок',
-    status: 409,
   })
   async create(
     @Body() createOfferDto: CreateOfferDto,
-    @Request() req: IUserRequest,
+    @AuthorizedUser() user,
   ): Promise<Offer> {
-    return await this.offersService.create(createOfferDto, req.user);
+    return await this.offersService.create(createOfferDto, user);
   }
 
   @Get()
-  @ApiResponse({
+  @ApiOkResponse({
     type: Offer,
     isArray: true,
-    status: 200,
   })
   async findAll(): Promise<Offer[]> {
     return await this.offersService.findAll({
@@ -53,19 +56,14 @@ export class OffersController {
   }
 
   @Get(':id')
-  @ApiResponse({
+  @ApiOkResponse({
     type: Offer,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Подарок с id: #{id} не найден',
-    status: 404,
   })
   async findOne(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
   ): Promise<Offer> {
     return await this.offersService.findOne(id, {

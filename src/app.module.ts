@@ -45,7 +45,7 @@ import { WishlistsModule } from './modules/wishlists/wishlists.module';
         info: 4,
       },
       transports: [
-        new winston.transports.Console({ format: winston.format.simple() }),
+        new winston.transports.Console({ format: winston.format.cli() }),
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
       ],
     }),

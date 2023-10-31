@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class SignInUserDto {
-  @ApiProperty({ example: ApiPropertiesExamples.User.USERNAME })
+  @ApiProperty({ example: SwaggerExamples.User.USERNAME })
   @IsString()
   username: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.PASSWORD })
+  @ApiProperty({ example: SwaggerExamples.User.PASSWORD })
   @IsString()
   password: string;
 }

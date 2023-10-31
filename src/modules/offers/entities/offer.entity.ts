@@ -10,21 +10,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity({ name: 'offers' })
 export class Offer {
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
@@ -32,7 +32,7 @@ export class Offer {
   @ManyToOne(() => Wish)
   item: Wish;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
+  @ApiProperty({ example: SwaggerExamples.Common.CURRENCY })
   @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)

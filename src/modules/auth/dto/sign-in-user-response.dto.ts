@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class SignInUserResponseDto {
   @ApiProperty({
-    example: ApiPropertiesExamples.Common.JWT_TOKEN,
+    example: SwaggerExamples.Common.JWT_TOKEN,
   })
   access_token: string;
 }

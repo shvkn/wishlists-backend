@@ -8,19 +8,19 @@ import {
   Length,
 } from 'class-validator';
 
-import { ApiDefaults, ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class CreateUserDto {
-  @ApiProperty({ example: ApiPropertiesExamples.User.USERNAME })
+  @ApiProperty({ example: SwaggerExamples.User.USERNAME })
   @IsString()
   username: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.EMAIL })
+  @ApiProperty({ example: SwaggerExamples.User.EMAIL })
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: ApiPropertiesExamples.User.PASSWORD,
+    example: SwaggerExamples.User.PASSWORD,
   })
   @IsString()
   password: string;
@@ -29,16 +29,14 @@ export class CreateUserDto {
   @Length(1, 200)
   @ApiProperty({
     required: false,
-    example: ApiPropertiesExamples.User.ABOUT,
-    default: ApiDefaults.User.ABOUT,
+    example: SwaggerExamples.User.ABOUT,
   })
   @IsString()
   about?: string;
 
   @ApiProperty({
     required: false,
-    example: ApiPropertiesExamples.User.AVATAR,
-    default: ApiDefaults.User.AVATAR,
+    example: SwaggerExamples.User.AVATAR,
   })
   @IsUrl()
   @IsOptional()

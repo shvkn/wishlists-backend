@@ -1,27 +1,27 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUrl, Length } from 'class-validator';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class UserPublicResponseDto {
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   id: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   createdAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   updatedAt: Date;
 
   @ApiProperty({
-    example: ApiPropertiesExamples.User.USERNAME,
+    example: SwaggerExamples.User.USERNAME,
   })
   @IsString()
   username: string;
 
   @ApiProperty({
     required: false,
-    example: ApiPropertiesExamples.User.ABOUT,
+    example: SwaggerExamples.User.ABOUT,
   })
   @Length(1, 200)
   @IsString()
@@ -29,7 +29,7 @@ export class UserPublicResponseDto {
 
   @ApiProperty({
     required: false,
-    example: ApiPropertiesExamples.User.AVATAR,
+    example: SwaggerExamples.User.AVATAR,
   })
   @IsUrl()
   avatar: string;

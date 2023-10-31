@@ -5,13 +5,18 @@ import {
   Param,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { SwaggerTags } from '../../utils/constants';
+import { SwaggerTags } from '../../utils/swagger.constants';
 import { UserWishesDto } from '../wishes/dto/user-wishes.dto';
 import { Wish } from '../wishes/entities/wish.entity';
 import { FindUserDto } from './dto/find-user.dto';
@@ -28,12 +33,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  @ApiResponse({
+  @ApiOkResponse({
     type: UserProfileResponseDto,
-    status: 200,
   })
-  async findOwn(@Request() req: IUserRequest): Promise<UserProfileResponseDto> {
-    const user = await this.usersService.findOne(req.user.username);
+  async findOwn(
+    @AuthorizedUser('username') username,
+  ): Promise<UserProfileResponseDto> {
+    const user = await this.usersService.findOne(username);
 
     return {
       id: user.id,
@@ -47,22 +53,17 @@ export class UsersController {
   }
 
   @Patch('me')
-  @ApiResponse({
+  @ApiOkResponse({
     type: UserProfileResponseDto,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiBadRequestResponse({
     description: 'Ошибка валидации переданных значений',
-    status: 400,
   })
   async update(
-    @Request() req,
+    @AuthorizedUser('username') username,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
-    const user = await this.usersService.update(
-      req.user.username,
-      updateUserDto,
-    );
+    const user = await this.usersService.update(username, updateUserDto);
 
     return {
       id: user.id,
@@ -76,13 +77,12 @@ export class UsersController {
   }
 
   @Get('me/wishes')
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wish,
     isArray: true,
-    status: 200,
   })
-  async getOwnWishes(@Request() req: IUserRequest): Promise<Wish[]> {
-    const user = await this.usersService.findOne(req.user.username, {
+  async getOwnWishes(@AuthorizedUser('username') username): Promise<Wish[]> {
+    const user = await this.usersService.findOne(username, {
       select: { wishes: true },
       relations: { wishes: { offers: true } },
     });
@@ -90,10 +90,9 @@ export class UsersController {
   }
 
   @Get(':username')
-  @ApiResponse({
+  @ApiOkResponse({
     type: UserPublicResponseDto,
     isArray: true,
-    status: 200,
   })
   async findOne(
     @Param('username') username: string,
@@ -110,10 +109,9 @@ export class UsersController {
   }
 
   @Get(':username/wishes')
-  @ApiResponse({
+  @ApiOkResponse({
     type: UserWishesDto,
     isArray: true,
-    status: 200,
   })
   async getWishes(
     @Param('username') username: string,
@@ -125,10 +123,9 @@ export class UsersController {
   }
 
   @Post('find')
-  @ApiResponse({
+  @ApiOkResponse({
     type: UserProfileResponseDto,
     isArray: true,
-    status: 200,
   })
   async findMany(
     @Body() findUserDto: FindUserDto,

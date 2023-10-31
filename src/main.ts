@@ -10,7 +10,7 @@ import {
   SWAGGER_API_TITLE,
   SWAGGER_VERSION,
   SwaggerTags,
-} from './utils/constants';
+} from './utils/swagger.constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

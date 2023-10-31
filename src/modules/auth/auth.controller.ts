@@ -1,15 +1,15 @@
-import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { AuthorizedUser } from '../../decorators/authorized-user';
 import { LocalAuthGuard } from '../../guards/local-auth.guard';
-import { SwaggerTags } from '../../utils/constants';
+import { SwaggerTags } from '../../utils/swagger.constants';
 import { AuthService } from './auth.service';
 import { SignInUserDto } from './dto/sign-in-user.dto';
 import { SignInUserResponseDto } from './dto/sign-in-user-response.dto';
@@ -31,7 +31,6 @@ export class AuthController {
   async signup(
     @Body() signUpDto: SignUpUserDto,
   ): Promise<SignUpUserResponseDto> {
-    console.log(signUpDto);
     return await this.authService.register(signUpDto);
   }
 
@@ -40,14 +39,13 @@ export class AuthController {
   @ApiBody({
     type: SignInUserDto,
   })
-  @ApiResponse({
+  @ApiCreatedResponse({
     type: SignInUserResponseDto,
-    status: 201,
   })
   @ApiUnauthorizedResponse({
     description: 'Некорректная пара логин и пароль',
   })
-  signin(@Request() req): SignInUserResponseDto {
-    return this.authService.provideJwtTokens(req.user);
+  signin(@AuthorizedUser() user): SignInUserResponseDto {
+    return this.authService.provideJwtTokens(user);
   }
 }

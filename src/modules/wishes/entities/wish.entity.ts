@@ -11,22 +11,22 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 import { Offer } from '../../offers/entities/offer.entity';
 import { UserProfileResponseDto } from '../../users/dto/user-profile-response.dto';
 import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'wishes' })
 export class Wish {
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
@@ -35,35 +35,35 @@ export class Wish {
   @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 
-  @ApiProperty({ example: ApiPropertiesExamples })
+  @ApiProperty({ example: SwaggerExamples })
   @Column()
   @IsString()
   @Length(1, 250)
   name: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Wish.IMAGE })
+  @ApiProperty({ example: SwaggerExamples.Wish.IMAGE })
   @Column()
   @IsUrl()
   link: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Wish.IMAGE })
+  @ApiProperty({ example: SwaggerExamples.Wish.IMAGE })
   @Column()
   @IsUrl()
   image: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
+  @ApiProperty({ example: SwaggerExamples.Common.CURRENCY })
   @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(1)
   price: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.CURRENCY })
+  @ApiProperty({ example: SwaggerExamples.Common.CURRENCY })
   @Column()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   raised: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Wish.DESCRIPTION })
+  @ApiProperty({ example: SwaggerExamples.Wish.DESCRIPTION })
   @Column()
   @IsString()
   @Length(1, 1024)
@@ -76,7 +76,7 @@ export class Wish {
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   @Column({ default: 0 })
   @Min(0)
   @IsInt()

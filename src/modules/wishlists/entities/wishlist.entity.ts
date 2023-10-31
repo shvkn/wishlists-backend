@@ -12,31 +12,31 @@ import {
 } from 'typeorm';
 import { JoinTable } from 'typeorm';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 import { User } from '../../users/entities/user.entity';
 import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity({ name: 'wishlists' })
 export class Wishlist {
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @CreateDateColumn()
   createdAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Wishlist.NAME })
+  @ApiProperty({ example: SwaggerExamples.Wishlist.NAME })
   @Column()
   @IsString()
   @Length(1, 250)
   name: string;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Wishlist.IMAGE })
+  @ApiProperty({ example: SwaggerExamples.Wishlist.IMAGE })
   @Column()
   @IsUrl()
   image: string;

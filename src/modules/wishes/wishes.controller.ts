@@ -3,19 +3,25 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OwnerGuard } from '../../guards/owner.guard';
-import { SwaggerTags } from '../../utils/constants';
+import { SwaggerTags } from '../../utils/swagger.constants';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -29,25 +35,24 @@ export class WishesController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiResponse({
+  @ApiCreatedResponse({
     type: Wish,
-    status: 201,
   })
   create(
     @Body() createWishDto: CreateWishDto,
-    @Request() req: IUserRequest,
+    @AuthorizedUser() user,
   ): Promise<Wish> {
-    return this.wishesService.create(createWishDto, req.user);
+    return this.wishesService.create(createWishDto, user);
   }
 
   @Get('last')
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wish,
     isArray: true,
-    status: 200,
   })
-  findLast() {
-    return this.wishesService.findLast(20, {
+  findLast(): Promise<Wish[]> {
+    const LIMIT = 20;
+    return this.wishesService.findLast(LIMIT, {
       owner: true,
       offers: {
         user: true,
@@ -56,13 +61,13 @@ export class WishesController {
   }
 
   @Get('top')
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wish,
     isArray: true,
-    status: 200,
   })
-  findTop() {
-    return this.wishesService.findTop(40, {
+  findTop(): Promise<Wish[]> {
+    const LIMIT = 40;
+    return this.wishesService.findTop(LIMIT, {
       owner: true,
       offers: {
         user: true,
@@ -73,45 +78,34 @@ export class WishesController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wish,
     isArray: true,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Подарок с id: #{id} не найден',
-    status: 404,
   })
   findOne(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
-  ) {
+  ): Promise<Wish> {
     return this.wishesService.findOne(id);
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wish,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiBadRequestResponse({
     description: 'Нельзя изменять стоимость, если уже есть желающие скинуться',
-    status: 409,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Подарок с id: #{id} не найден',
-    status: 404,
   })
   update(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
     @Body() updateWishDto: UpdateWishDto,
   ): Promise<Wish> {
@@ -121,19 +115,14 @@ export class WishesController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wish,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Подарок с id: #{id} не найден',
-    status: 404,
   })
   delete(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
   ): Promise<Wish> {
     return this.wishesService.delete(id);
@@ -142,22 +131,17 @@ export class WishesController {
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiResponse({
+  @ApiCreatedResponse({
     type: Wish,
-    status: 201,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Подарок с id: #{id} не найден',
-    status: 404,
   })
   copyWish(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
-    @Request() req: IUserRequest,
-  ) {
-    return this.wishesService.copy(id, req.user);
+    @AuthorizedUser() user,
+  ): Promise<Wish> {
+    return this.wishesService.copy(id, user);
   }
 }

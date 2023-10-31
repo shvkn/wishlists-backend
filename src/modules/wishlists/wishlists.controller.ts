@@ -3,12 +3,10 @@ import {
   Controller,
   Delete,
   Get,
-  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,9 +17,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OwnerGuard } from '../../guards/owner.guard';
-import { SwaggerTags } from '../../utils/constants';
+import { SwaggerTags } from '../../utils/swagger.constants';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
@@ -54,9 +53,9 @@ export class WishlistsController {
   })
   create(
     @Body() createWishlistDto: CreateWishlistDto,
-    @Request() req,
+    @AuthorizedUser() user,
   ): Promise<Wishlist> {
-    return this.wishlistsService.create(createWishlistDto, req.user);
+    return this.wishlistsService.create(createWishlistDto, user);
   }
 
   @Get(':id')
@@ -67,10 +66,7 @@ export class WishlistsController {
     description: 'Вишлист с id: #{id} не найден',
   })
   findOne(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
   ): Promise<Wishlist> {
     return this.wishlistsService.findOne(id, {
@@ -90,10 +86,7 @@ export class WishlistsController {
     description: 'Вишлист с id: #{id} не найден',
   })
   update(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
     @Body() updateWishlistDto: UpdateWishlistDto,
   ): Promise<Wishlist> {
@@ -109,10 +102,7 @@ export class WishlistsController {
     description: 'Вишлист с id: #{id} не найден',
   })
   removeOne(
-    @Param(
-      'id',
-      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
-    )
+    @Param('id', ParseIntPipe)
     id: number,
   ): Promise<Wishlist> {
     return this.wishlistsService.removeOne(id);

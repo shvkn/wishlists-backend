@@ -1,37 +1,37 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class CreateUserResponseDto {
-  @ApiProperty({ example: ApiPropertiesExamples.Common.ID })
+  @ApiProperty({ example: SwaggerExamples.Common.ID })
   id: number;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   createdAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.Common.DATE })
+  @ApiProperty({ example: SwaggerExamples.Common.DATE })
   updatedAt: Date;
 
-  @ApiProperty({ example: ApiPropertiesExamples.User.USERNAME })
+  @ApiProperty({ example: SwaggerExamples.User.USERNAME })
   @IsString()
   username: string;
 
   @ApiProperty({
-    example: ApiPropertiesExamples.User.EMAIL,
+    example: SwaggerExamples.User.EMAIL,
   })
   @IsEmail()
   email: string;
 
   @ApiProperty({
-    example: ApiPropertiesExamples.User.PASSWORD,
+    example: SwaggerExamples.User.PASSWORD,
   })
   @IsString()
   password: string;
 
   @ApiProperty({
     required: false,
-    example: ApiPropertiesExamples.User.ABOUT,
+    example: SwaggerExamples.User.ABOUT,
   })
   @Length(1, 200)
   @IsOptional()
@@ -40,7 +40,7 @@ export class CreateUserResponseDto {
 
   @ApiProperty({
     required: false,
-    example: ApiPropertiesExamples.User.AVATAR,
+    example: SwaggerExamples.User.AVATAR,
   })
   @IsOptional()
   @IsUrl()

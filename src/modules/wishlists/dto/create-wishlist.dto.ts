@@ -1,23 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, IsUrl, Length } from 'class-validator';
 
-import { ApiPropertiesExamples } from '../../../utils/constants';
+import { SwaggerExamples } from '../../../utils/swagger.constants';
 
 export class CreateWishlistDto {
   @ApiProperty({
-    example: ApiPropertiesExamples.Wishlist.IMAGE,
+    example: SwaggerExamples.Wishlist.IMAGE,
   })
   @IsString()
   @Length(1, 250)
   name: string;
 
   @ApiProperty({
-    example: ApiPropertiesExamples.Wishlist.IMAGE,
+    example: SwaggerExamples.Wishlist.IMAGE,
   })
   @IsUrl()
   image: string;
   @ApiProperty({
-    example: ApiPropertiesExamples.Common.IDS_LIST,
+    example: SwaggerExamples.Common.IDS_LIST,
   })
   @IsNumber({}, { each: true })
   itemsId: number[];
