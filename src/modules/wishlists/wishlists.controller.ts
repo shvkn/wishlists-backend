@@ -11,7 +11,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OwnerGuard } from '../../guards/owner.guard';
@@ -29,10 +35,9 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Get()
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wishlist,
     isArray: true,
-    status: 200,
   })
   findAll(): Promise<Wishlist[]> {
     return this.wishlistsService.findAll({
@@ -44,22 +49,22 @@ export class WishlistsController {
   }
 
   @Post()
-  @ApiResponse({
+  @ApiCreatedResponse({
     type: Wishlist,
-    status: 201,
   })
-  create(@Body() createWishlistDto: CreateWishlistDto, @Request() req) {
+  create(
+    @Body() createWishlistDto: CreateWishlistDto,
+    @Request() req,
+  ): Promise<Wishlist> {
     return this.wishlistsService.create(createWishlistDto, req.user);
   }
 
   @Get(':id')
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wishlist,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Вишлист с id: #{id} не найден',
-    status: 404,
   })
   findOne(
     @Param(
@@ -78,13 +83,11 @@ export class WishlistsController {
 
   @Patch(':id')
   @UseGuards(OwnerGuard)
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wishlist,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Вишлист с id: #{id} не найден',
-    status: 404,
   })
   update(
     @Param(
@@ -99,13 +102,11 @@ export class WishlistsController {
 
   @Delete(':id')
   @UseGuards(OwnerGuard)
-  @ApiResponse({
+  @ApiOkResponse({
     type: Wishlist,
-    status: 200,
   })
-  @ApiResponse({
+  @ApiNotFoundResponse({
     description: 'Вишлист с id: #{id} не найден',
-    status: 404,
   })
   removeOne(
     @Param(
@@ -113,7 +114,7 @@ export class WishlistsController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-  ) {
+  ): Promise<Wishlist> {
     return this.wishlistsService.removeOne(id);
   }
 }

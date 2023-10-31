@@ -18,6 +18,7 @@ export class WishlistsService {
     @Inject(forwardRef(() => WishesService))
     private readonly wishesService: WishesService,
   ) {}
+
   async findAll(options?: FindManyOptions<Wishlist>): Promise<Wishlist[]> {
     return await this.wishlistsRepository.find(options);
   }
@@ -27,18 +28,14 @@ export class WishlistsService {
     user: User,
   ): Promise<Wishlist> {
     const { itemsId, ...restCreateWishlistDto } = createWishlistDto;
-    try {
-      const items: Wish[] = await Promise.all(
-        itemsId.map((itemId) => this.wishesService.findOne(itemId)),
-      );
-      return await this.wishlistsRepository.save({
-        ...restCreateWishlistDto,
-        items,
-        owner: user,
-      });
-    } catch (error) {
-      throw error;
-    }
+    const items: Wish[] = await Promise.all(
+      itemsId.map((itemId) => this.wishesService.findOne(itemId)),
+    );
+    return await this.wishlistsRepository.save({
+      ...restCreateWishlistDto,
+      items,
+      owner: user,
+    });
   }
 
   async findOne(
@@ -71,8 +68,9 @@ export class WishlistsService {
     });
   }
 
-  async removeOne(id: number) {
+  async removeOne(id: number): Promise<Wishlist> {
     const wishlist = await this.findOne(id);
-    return await this.wishlistsRepository.delete({ id: wishlist.id });
+    await this.wishlistsRepository.delete(wishlist.id);
+    return wishlist;
   }
 }
