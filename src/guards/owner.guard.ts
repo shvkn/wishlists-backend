@@ -35,7 +35,6 @@ export class OwnerGuard implements CanActivate {
     });
     const service = this.moduleRef.get(serviceRef, { strict: false });
     const entity = await service.findOne(id);
-
     if (!entity.owner) {
       throw new BadRequestException(
         `Wrong using of OwnerGuard. Entity "${featureName}" has no owner parameter.`,

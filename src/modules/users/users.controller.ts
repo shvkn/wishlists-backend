@@ -118,6 +118,7 @@ export class UsersController {
   ): Promise<UserWishesDto[]> {
     const user = await this.usersService.findOne(username, {
       select: { wishes: true },
+      relations: { wishes: { offers: true } },
     });
     return user.wishes;
   }
@@ -130,16 +131,6 @@ export class UsersController {
   async findMany(
     @Body() findUserDto: FindUserDto,
   ): Promise<UserProfileResponseDto[]> {
-    return await this.usersService.findMany(findUserDto.query, {
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        username: true,
-        email: true,
-        avatar: true,
-        about: true,
-      },
-    });
+    return await this.usersService.findMany(findUserDto.query);
   }
 }

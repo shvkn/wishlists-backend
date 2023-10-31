@@ -46,6 +46,7 @@ export class WishlistsService {
       return await this.wishlistsRepository.findOneOrFail({
         ...options,
         where: { id },
+        relations: { owner: true },
       });
     } catch (error) {
       throw new WishlistNotFoundedException(id);

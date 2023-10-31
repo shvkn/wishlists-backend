@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Like, Repository } from 'typeorm';
 
@@ -37,21 +37,25 @@ export class UsersService {
     query: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
-    const user = await this.findOne(query);
-    if (updateUserDto.password?.length > 0) {
-      updateUserDto.password = hash(updateUserDto.password);
+    try {
+      const user = await this.findOne(query);
+      if (updateUserDto.password?.length > 0) {
+        updateUserDto.password = hash(updateUserDto.password);
+      }
+      await this.usersRepository.update({ id: user.id }, updateUserDto);
+      const updated = await this.findOne(query);
+      return {
+        id: updated.id,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt,
+        username: updated.username,
+        email: updated.email,
+        avatar: updated.avatar,
+        about: updated.about,
+      };
+    } catch (e) {
+      throw new BadRequestException(e.detail);
     }
-    await this.usersRepository.update({ id: user.id }, updateUserDto);
-    const updated = await this.findOne(query);
-    return {
-      id: updated.id,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
-      username: updated.username,
-      email: updated.email,
-      avatar: updated.avatar,
-      about: updated.about,
-    };
   }
 
   async findOne(query: string, options?: FindOneOptions<User>): Promise<User> {
@@ -65,14 +69,11 @@ export class UsersService {
     }
   }
 
-  async findMany(
-    query: string,
-    options?: FindOneOptions<User>,
-  ): Promise<UserProfileResponseDto[]> {
+  async findMany(query: string): Promise<UserProfileResponseDto[]> {
     const template = `%${query}%`;
-    return await this.usersRepository.find({
-      ...options,
-      where: [{ email: Like(template) }, { username: Like(template) }],
-    });
+    return await this.usersRepository.findBy([
+      { email: Like(template) },
+      { username: Like(template) },
+    ]);
   }
 }
