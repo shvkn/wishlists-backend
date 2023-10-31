@@ -26,14 +26,3 @@ export const SwaggerExamples = {
     NAME: 'Подарки на НГ',
   },
 } as const;
-export const SWAGGER_API_PATH = 'api';
-export const SWAGGER_API_TITLE = 'Kupipodariday API';
-export const SWAGGER_API_DESCRIPTION = 'API сервиса вишлистов';
-export const SWAGGER_VERSION = '1.0';
-export const SwaggerTags = {
-  AUTH: 'auth',
-  OFFERS: 'offers',
-  USERS: 'users',
-  WISHES: 'wishes',
-  WISHLISTS: 'wishlists',
-};

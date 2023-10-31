@@ -13,26 +13,30 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { SwaggerTags } from '../../utils/swagger.constants';
+import { ExceptionsMessages } from '../../utils/exception-messages.constants';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
-@ApiTags(SwaggerTags.OFFERS)
+@ApiTags('Offers')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
+  @ApiOperation({ description: 'Создание офера' })
   @ApiCreatedResponse({ type: Offer })
-  @ApiBadRequestResponse({ description: 'Нельзя скидываться себе на подарок' })
+  @ApiBadRequestResponse({
+    description: ExceptionsMessages.CANT_OFFER_YOUR_WISH,
+  })
   async create(
     @Body() createOfferDto: CreateOfferDto,
     @AuthorizedUser() user,
@@ -41,6 +45,7 @@ export class OffersController {
   }
 
   @Get()
+  @ApiOperation({ description: 'Получение всех оферов' })
   @ApiOkResponse({ type: Offer, isArray: true })
   async findAll(): Promise<Offer[]> {
     return await this.offersService.findAll({
@@ -49,8 +54,9 @@ export class OffersController {
   }
 
   @Get(':id')
+  @ApiOperation({ description: 'Получение офера по ID' })
   @ApiOkResponse({ type: Offer })
-  @ApiNotFoundResponse({ description: 'Подарок не найден' })
+  @ApiNotFoundResponse({ description: ExceptionsMessages.OFFER_NOT_FOUND })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Offer> {
     return await this.offersService.findOne({
       where: { id },

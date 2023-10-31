@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
-import { NotOwnerException } from '../error-exceptions/not-owner.exception';
+import { YouShouldBeOwnerException } from '../error-exceptions/you-should-be-owner.exception';
 import { WishesService } from '../modules/wishes/wishes.service';
 import { WishlistsService } from '../modules/wishlists/wishlists.service';
 
@@ -43,6 +43,6 @@ export class OwnerGuard implements CanActivate {
     if (user?.id && entity.owner.id === user.id) {
       return true;
     }
-    throw new NotOwnerException();
+    throw new YouShouldBeOwnerException();
   }
 }

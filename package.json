@@ -1,7 +1,7 @@
 {
   "name": "kupipodariday-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "API сервиса вишлистов",
   "author": "Anatoly Shuvakhin",
   "private": true,
   "license": "UNLICENSED",

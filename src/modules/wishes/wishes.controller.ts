@@ -15,29 +15,26 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 
 import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { OwnerGuard } from '../../guards/owner.guard';
-import { SwaggerTags } from '../../utils/swagger.constants';
+import { ExceptionsMessages } from '../../utils/exception-messages.constants';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
 
-const WISH_NOT_FOUNDED = 'Подарок с id = #{ID} не найден';
-
-const PRICE_CHANGING_IS_NOT_ALLOWED =
-  'Нельзя изменять стоимость, если уже есть желающие скинуться';
-
 @Controller('wishes')
-@ApiTags(SwaggerTags.WISHES)
+@ApiTags('Wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
+  @ApiOperation({ description: 'Создание подарка' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: Wish })
@@ -49,6 +46,10 @@ export class WishesController {
   }
 
   @Get('last')
+  @ApiOperation({
+    description:
+      'Получение 20 подарков, которые копируют в свой профиль чаще всего',
+  })
   @ApiOkResponse({ type: Wish, isArray: true })
   findLast(): Promise<Wish[]> {
     const LIMIT = 20;
@@ -65,6 +66,9 @@ export class WishesController {
   }
 
   @Get('top')
+  @ApiOperation({
+    description: 'Получение 40 подарков добавленных недавно',
+  })
   @ApiOkResponse({ type: Wish, isArray: true })
   findTop(): Promise<Wish[]> {
     const LIMIT = 40;
@@ -81,20 +85,24 @@ export class WishesController {
   }
 
   @Get(':id')
+  @ApiOperation({ description: 'Получение подарка по ID' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: Wish, isArray: true })
-  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
+  @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
   findOne(@Param('id', ParseIntPipe) id: number): Promise<Wish> {
     return this.wishesService.findOne({ where: { id } });
   }
 
   @Patch(':id')
+  @ApiOperation({ description: 'Обновление подарка по ID' })
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: Wish })
-  @ApiBadRequestResponse({ description: PRICE_CHANGING_IS_NOT_ALLOWED })
-  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
+  @ApiBadRequestResponse({
+    description: ExceptionsMessages.PRICE_CHANGING_NOT_ALLOWED,
+  })
+  @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWishDto: UpdateWishDto,
@@ -103,19 +111,21 @@ export class WishesController {
   }
 
   @Delete(':id')
+  @ApiOperation({ description: 'Удаление подарка по ID' })
   @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: Wish })
-  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
+  @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
   delete(@Param('id', ParseIntPipe) id: number): Promise<Wish> {
     return this.wishesService.delete({ where: { id } });
   }
 
   @Post(':id/copy')
+  @ApiOperation({ description: 'Копирование подарка по ID' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: Wish })
-  @ApiNotFoundResponse({ description: WISH_NOT_FOUNDED })
+  @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
   copyWish(
     @Param('id', ParseIntPipe) id: number,
     @AuthorizedUser('userId') userId,

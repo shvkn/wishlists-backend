@@ -11,13 +11,14 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
 import { Like } from 'typeorm';
 
 import { AuthorizedUser } from '../../decorators/authorized-user';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
-import { SwaggerTags } from '../../utils/swagger.constants';
+import { ExceptionsMessages } from '../../utils/exception-messages.constants';
 import { UserWishesDto } from '../wishes/dto/user-wishes.dto';
 import { Wish } from '../wishes/entities/wish.entity';
 import { FindUserDto } from './dto/find-user.dto';
@@ -26,19 +27,22 @@ import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UserPublicResponseDto } from './dto/user-public-response.dto';
 import { UsersService } from './users.service';
 
-const VALIDATION_ERROR = 'Ошибка валидации переданных значений';
-
 @Controller('users')
-@ApiTags(SwaggerTags.USERS)
+@ApiTags('Users')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
+  @ApiOperation({
+    description: 'Запрос на получение профайла авторизованного пользователя',
+  })
   @ApiOkResponse({ type: UserProfileResponseDto })
-  async findOwn(@AuthorizedUser('userId') id): Promise<UserProfileResponseDto> {
-    const user = await this.usersService.findOne({ where: { id } });
+  async findOwn(
+    @AuthorizedUser('userId') userId,
+  ): Promise<UserProfileResponseDto> {
+    const user = await this.usersService.findOne({ where: { id: userId } });
     return {
       id: user.id,
       createdAt: user.createdAt,
@@ -51,28 +55,34 @@ export class UsersController {
   }
 
   @Patch('me')
+  @ApiOperation({
+    description: 'Запрос на обновление профайла авторизованного пользователя',
+  })
   @ApiOkResponse({ type: UserProfileResponseDto })
-  @ApiBadRequestResponse({ description: VALIDATION_ERROR })
+  @ApiBadRequestResponse({ description: ExceptionsMessages.VALIDATION_ERR })
   async update(
-    @AuthorizedUser('userId') id,
+    @AuthorizedUser('userId') userId,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
-    const updated = await this.usersService.update(
-      { where: { id } },
+    const user = await this.usersService.update(
+      { where: { id: userId } },
       updateUserDto,
     );
     return {
-      id: updated.id,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
-      username: updated.username,
-      email: updated.email,
-      avatar: updated.avatar,
-      about: updated.about,
+      id: user.id,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
+      about: user.about,
     };
   }
 
   @Get('me/wishes')
+  @ApiOperation({
+    description: 'Получение списка подарков авторизованного пользователя',
+  })
   @ApiOkResponse({ type: Wish, isArray: true })
   async getOwnWishes(@AuthorizedUser('userId') id): Promise<Wish[]> {
     const { wishes } = await this.usersService.findOne({
@@ -84,6 +94,7 @@ export class UsersController {
   }
 
   @Get(':username')
+  @ApiOperation({ description: 'Получение профайла пользователя по USERNAME' })
   @ApiOkResponse({ type: UserPublicResponseDto, isArray: true })
   async findOne(
     @Param('username') username: string,
@@ -100,19 +111,23 @@ export class UsersController {
   }
 
   @Get(':username/wishes')
+  @ApiOperation({
+    description: 'Получение списка подарков пользователя по USERNAME',
+  })
   @ApiOkResponse({ type: UserWishesDto, isArray: true })
   async getWishes(
     @Param('username') username: string,
   ): Promise<UserWishesDto[]> {
-    const user = await this.usersService.findOne({
+    const { wishes } = await this.usersService.findOne({
       where: { username },
       select: { wishes: true },
       relations: { wishes: { offers: true } },
     });
-    return user.wishes;
+    return wishes;
   }
 
   @Post('find')
+  @ApiOperation({ description: 'Получение списка пользователя по QUERY' })
   @ApiOkResponse({ type: UserProfileResponseDto, isArray: true })
   async findMany(
     @Body() findUserDto: FindUserDto,

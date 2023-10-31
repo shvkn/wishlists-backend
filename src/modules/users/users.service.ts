@@ -4,13 +4,11 @@ import { Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-import { UserExistsException } from '../../error-exceptions/user-exists.exception';
-import { UserNotFoundedException } from '../../error-exceptions/user-not-founded.exception';
+import { UserAlreadyExistsException } from '../../error-exceptions/user-already-exists.exception';
+import { UserNotFoundException } from '../../error-exceptions/user-not-found.exception';
 import { hash } from '../../utils/hash-utils';
 import { CreateUserDto } from './dto/create-user.dto';
-import { CreateUserResponseDto } from './dto/create-user-response.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -19,7 +17,7 @@ export class UsersService {
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<CreateUserResponseDto> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     const existingUser = await this.usersRepository.findOne({
       where: [
         { username: createUserDto.username },
@@ -27,7 +25,7 @@ export class UsersService {
       ],
     });
     if (existingUser) {
-      throw new UserExistsException();
+      throw new UserAlreadyExistsException();
     }
     return this.usersRepository.save({
       ...createUserDto,
@@ -38,25 +36,14 @@ export class UsersService {
   async update(
     options: FindOneOptions<User>,
     updateUserDto: UpdateUserDto,
-  ): Promise<UserProfileResponseDto> {
+  ): Promise<User> {
     try {
       const user = await this.findOne(options);
       if (updateUserDto.password?.length > 0) {
         updateUserDto.password = hash(updateUserDto.password);
       }
       await this.usersRepository.update(user.id, updateUserDto);
-      const updated = await this.findOne({
-        where: { id: user.id },
-      });
-      return {
-        id: updated.id,
-        createdAt: updated.createdAt,
-        updatedAt: updated.updatedAt,
-        username: updated.username,
-        email: updated.email,
-        avatar: updated.avatar,
-        about: updated.about,
-      };
+      return await this.findOne(options);
     } catch (e) {
       throw new BadRequestException(e.message);
     }
@@ -66,13 +53,11 @@ export class UsersService {
     try {
       return await this.usersRepository.findOneOrFail(options);
     } catch (e) {
-      throw new UserNotFoundedException();
+      throw new UserNotFoundException();
     }
   }
 
-  async findMany(
-    options?: FindManyOptions<User>,
-  ): Promise<UserProfileResponseDto[]> {
+  async findMany(options?: FindManyOptions<User>): Promise<User[]> {
     return await this.usersRepository.find(options);
   }
 }

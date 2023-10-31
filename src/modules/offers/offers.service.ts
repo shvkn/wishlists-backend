@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-import { IncorrectAmountException } from '../../error-exceptions/incorrect-amount.exception';
+import { CantOfferSelfWishException } from '../../error-exceptions/cant-offer-self-wish.exception';
+import { IncorrectOfferAmountException } from '../../error-exceptions/incorrect-offer-amount.exception';
 import { OfferNotFoundException } from '../../error-exceptions/offer-not-found.exception';
-import { OfferOnSelfWishException } from '../../error-exceptions/offer-on-self-wish.exception';
 import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -25,11 +25,11 @@ export class OffersService {
       where: { id: createOfferDto.itemId },
     });
     if (wish.owner.id === user.id) {
-      throw new OfferOnSelfWishException();
+      throw new CantOfferSelfWishException();
     }
     const neededSum = wish.price - wish.raised;
     if (createOfferDto.amount > neededSum) {
-      throw new IncorrectAmountException(
+      throw new IncorrectOfferAmountException(
         `Сумма взноса не должна превышать ${neededSum}`,
       );
     }

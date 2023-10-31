@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 
 import { WishlistNotFoundedException } from '../../error-exceptions/wishlist-not-founded.exception';
-import { User } from '../users/entities/user.entity';
 import { Wish } from '../wishes/entities/wish.entity';
 import { WishesService } from '../wishes/wishes.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -19,22 +18,27 @@ export class WishlistsService {
     private readonly wishesService: WishesService,
   ) {}
 
+  private async mapIdToWish(id: number) {
+    return this.wishesService.findOne({
+      where: { id },
+      select: { id: true },
+    });
+  }
+
   async findAll(options?: FindManyOptions<Wishlist>): Promise<Wishlist[]> {
     return await this.wishlistsRepository.find(options);
   }
 
   async create(
     createWishlistDto: CreateWishlistDto,
-    user: User,
+    userId: number,
   ): Promise<Wishlist> {
     const { itemsId, ...data } = createWishlistDto;
-    const items: Wish[] = await Promise.all(
-      itemsId.map((id) => this.wishesService.findOne({ where: { id } })),
-    );
+    const items: Wish[] = await Promise.all(itemsId.map(this.mapIdToWish));
     return await this.wishlistsRepository.save({
       ...data,
       items,
-      owner: user,
+      owner: { id: userId },
     });
   }
 
@@ -52,14 +56,9 @@ export class WishlistsService {
   ): Promise<Wishlist> {
     const { itemsId, ...data } = updateWishlistDto;
     const { id } = await this.findOne(options);
-    const items: Wish[] = await Promise.all(
-      itemsId.map((id) => this.wishesService.findOne({ where: { id } })),
-    );
-    return await this.wishlistsRepository.save({
-      id,
-      ...data,
-      items,
-    });
+    const items: Wish[] = await Promise.all(itemsId.map(this.mapIdToWish));
+    await this.wishlistsRepository.update(id, { ...data, items });
+    return await this.findOne(options);
   }
 
   async removeOne(options: FindOneOptions<Wishlist>): Promise<Wishlist> {

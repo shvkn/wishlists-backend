@@ -4,8 +4,8 @@ import { DataSource, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-import { PriceChangingIsNotAllowedException } from '../../error-exceptions/price-changing-is-not-allowed.exception';
 import { WishNotFoundException } from '../../error-exceptions/wish-not-found.exception';
+import { WishPriceCantBeUpdatedException } from '../../error-exceptions/wish-price-cant-be-updated.exception';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -38,7 +38,7 @@ export class WishesService {
   ): Promise<Wish> {
     const wish = await this.findOne(options);
     if (updateWishDto.price >= 0 && wish.raised > 0) {
-      throw new PriceChangingIsNotAllowedException();
+      throw new WishPriceCantBeUpdatedException();
     }
     await this.wishesRepository.update(wish.id, updateWishDto);
     return await this.findOne(options);
