@@ -18,6 +18,7 @@ export class OffersService {
     private readonly offersRepository: Repository<Offer>,
     private readonly wishesService: WishesService,
   ) {}
+
   async create(createOfferDto: CreateOfferDto, user: IUser) {
     const wish = await this.wishesService.findOne(createOfferDto.itemId);
     if (wish.owner.id === user.id) {
@@ -39,7 +40,10 @@ export class OffersService {
         user: { id: user.id },
       });
       await queryRunner.manager.save<Offer>(offer);
-      await queryRunner.manager.save<Wish>(wish);
+      await queryRunner.manager.update(Wish, wish.id, {
+        raised:
+          Math.round((wish.raised + offer.amount + Number.EPSILON) * 100) / 100,
+      });
       await queryRunner.commitTransaction();
       return offer;
     } catch (error) {
