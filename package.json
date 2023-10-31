@@ -1,8 +1,8 @@
 {
   "name": "kupipodariday-backend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
-  "author": "",
+  "author": "Anatoly Shuvakhin",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {

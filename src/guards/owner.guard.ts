@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ModuleRef, Reflector } from '@nestjs/core';
 
-import { NotOwnerException } from '../error-exeptions/NotOwner.exception';
+import { NotOwnerException } from '../error-exeptions/not-owner.exception';
 import { WishesService } from '../modules/wishes/wishes.service';
 import { WishlistsService } from '../modules/wishlists/wishlists.service';
 

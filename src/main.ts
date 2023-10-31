@@ -14,7 +14,6 @@ import {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   app.enableCors();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -37,6 +36,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(SWAGGER_API_PATH, app, document);
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
-  await app.listen(3001);
+  await app.listen(+process.env.PORT || 3001);
 }
 bootstrap();
