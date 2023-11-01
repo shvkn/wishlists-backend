@@ -93,7 +93,7 @@ export class WishesController {
   findOne(@Param('id', ParseIntPipe) id: number): Promise<Wish> {
     return this.wishesService.findOne({
       where: { id },
-      relations: { offers: { user: true } },
+      relations: { offers: { user: true }, owner: true },
     });
   }
 

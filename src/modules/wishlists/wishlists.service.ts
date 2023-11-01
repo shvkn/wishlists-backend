@@ -18,13 +18,6 @@ export class WishlistsService {
     private readonly wishesService: WishesService,
   ) {}
 
-  private async mapIdToWish(id: number) {
-    return this.wishesService.findOne({
-      where: { id },
-      select: { id: true },
-    });
-  }
-
   async findAll(options?: FindManyOptions<Wishlist>): Promise<Wishlist[]> {
     return await this.wishlistsRepository.find(options);
   }
@@ -34,7 +27,14 @@ export class WishlistsService {
     userId: number,
   ): Promise<Wishlist> {
     const { itemsId, ...data } = createWishlistDto;
-    const items: Wish[] = await Promise.all(itemsId.map(this.mapIdToWish));
+    const items: Wish[] = await Promise.all(
+      itemsId.map((id) => {
+        return this.wishesService.findOne({
+          where: { id },
+          select: { id: true },
+        });
+      }),
+    );
     return await this.wishlistsRepository.save({
       ...data,
       items,
@@ -56,7 +56,14 @@ export class WishlistsService {
   ): Promise<Wishlist> {
     const { itemsId, ...data } = updateWishlistDto;
     const { id } = await this.findOne(options);
-    const items: Wish[] = await Promise.all(itemsId.map(this.mapIdToWish));
+    const items: Wish[] = await Promise.all(
+      itemsId.map((id) => {
+        return this.wishesService.findOne({
+          where: { id },
+          select: { id: true },
+        });
+      }),
+    );
     const updated = await this.wishlistsRepository.preload({
       id,
       ...data,
