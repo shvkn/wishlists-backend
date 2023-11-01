@@ -39,9 +39,7 @@ export class UsersController {
     description: 'Запрос на получение профайла авторизованного пользователя',
   })
   @ApiOkResponse({ type: UserProfileResponseDto })
-  async findOwn(
-    @AuthorizedUser('userId') userId,
-  ): Promise<UserProfileResponseDto> {
+  async findOwn(@AuthorizedUser('id') userId): Promise<UserProfileResponseDto> {
     const user = await this.usersService.findOne({ where: { id: userId } });
     return {
       id: user.id,
@@ -61,11 +59,11 @@ export class UsersController {
   @ApiOkResponse({ type: UserProfileResponseDto })
   @ApiBadRequestResponse({ description: ExceptionsMessages.VALIDATION_ERR })
   async update(
-    @AuthorizedUser('userId') userId,
+    @AuthorizedUser('id') id,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserProfileResponseDto> {
     const user = await this.usersService.update(
-      { where: { id: userId } },
+      { where: { id } },
       updateUserDto,
     );
     return {
@@ -84,13 +82,13 @@ export class UsersController {
     description: 'Получение списка подарков авторизованного пользователя',
   })
   @ApiOkResponse({ type: Wish, isArray: true })
-  async getOwnWishes(@AuthorizedUser('userId') id): Promise<Wish[]> {
-    const { wishes } = await this.usersService.findOne({
-      where: { id },
+  async getOwnWishes(@AuthorizedUser() user1): Promise<Wish[]> {
+    const user = await this.usersService.findOne({
+      where: { id: user1.id },
       select: { wishes: true },
-      relations: { wishes: { offers: true } },
+      relations: { wishes: { owner: true, offers: { user: true } } },
     });
-    return wishes;
+    return user.wishes;
   }
 
   @Get(':username')
@@ -122,7 +120,6 @@ export class UsersController {
       where: { username },
       relations: { wishes: { offers: { user: true } } },
     });
-    console.log(user);
     return user.wishes;
   }
 

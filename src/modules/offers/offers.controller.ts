@@ -39,9 +39,9 @@ export class OffersController {
   })
   async create(
     @Body() createOfferDto: CreateOfferDto,
-    @AuthorizedUser() user,
+    @AuthorizedUser('id') userId: number,
   ): Promise<Offer> {
-    return await this.offersService.create(createOfferDto, user);
+    return await this.offersService.create(createOfferDto, userId);
   }
 
   @Get()

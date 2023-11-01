@@ -51,7 +51,7 @@ export class WishlistsController {
   @ApiCreatedResponse({ type: Wishlist })
   create(
     @Body() createWishlistDto: CreateWishlistDto,
-    @AuthorizedUser('userId') userId,
+    @AuthorizedUser('id') userId,
   ): Promise<Wishlist> {
     return this.wishlistsService.create(createWishlistDto, userId);
   }

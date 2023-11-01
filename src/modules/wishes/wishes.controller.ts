@@ -91,7 +91,10 @@ export class WishesController {
   @ApiOkResponse({ type: Wish, isArray: true })
   @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
   findOne(@Param('id', ParseIntPipe) id: number): Promise<Wish> {
-    return this.wishesService.findOne({ where: { id } });
+    return this.wishesService.findOne({
+      where: { id },
+      relations: { offers: { user: true } },
+    });
   }
 
   @Patch(':id')
@@ -107,7 +110,6 @@ export class WishesController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWishDto: UpdateWishDto,
   ): Promise<Wish> {
-    console.log({ id });
     return this.wishesService.update({ where: { id } }, updateWishDto);
   }
 
@@ -129,7 +131,7 @@ export class WishesController {
   @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
   copyWish(
     @Param('id', ParseIntPipe) id: number,
-    @AuthorizedUser('userId') userId,
+    @AuthorizedUser('id') userId,
   ): Promise<Wish> {
     return this.wishesService.copy({ where: { id } }, userId);
   }

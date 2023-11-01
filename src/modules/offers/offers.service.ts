@@ -20,11 +20,12 @@ export class OffersService {
     private readonly wishesService: WishesService,
   ) {}
 
-  async create(createOfferDto: CreateOfferDto, user: IUser) {
+  async create(createOfferDto: CreateOfferDto, userId: number) {
     const wish = await this.wishesService.findOne({
       where: { id: createOfferDto.itemId },
+      relations: { owner: true },
     });
-    if (wish.owner.id === user.id) {
+    if (wish.owner.id === userId) {
       throw new CantOfferSelfWishException();
     }
     const neededSum = wish.price - wish.raised;
@@ -40,7 +41,7 @@ export class OffersService {
       const offer = await queryRunner.manager.create(Offer, {
         ...createOfferDto,
         item: { id: wish.id },
-        user: { id: user.id },
+        user: { id: userId },
       });
       await queryRunner.manager.save<Offer>(offer);
       await queryRunner.manager.update(Wish, wish.id, {
