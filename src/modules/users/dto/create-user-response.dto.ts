@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
+import { IsEmail, IsString, IsUrl, Length } from 'class-validator';
 
 import { SwaggerExamples } from '../../../utils/swagger.constants';
 
@@ -17,32 +17,20 @@ export class CreateUserResponseDto {
   @IsString()
   username: string;
 
-  @ApiProperty({
-    example: SwaggerExamples.User.EMAIL,
-  })
+  @ApiProperty({ example: SwaggerExamples.User.EMAIL })
   @IsEmail()
   email: string;
 
-  @ApiProperty({
-    example: SwaggerExamples.User.PASSWORD,
-  })
+  @ApiProperty({ example: SwaggerExamples.User.PASSWORD })
   @IsString()
   password: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.ABOUT,
-  })
+  @ApiProperty({ required: false, example: SwaggerExamples.User.ABOUT })
   @Length(1, 200)
-  @IsOptional()
   @IsString()
-  about?: string;
+  about: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.AVATAR,
-  })
-  @IsOptional()
+  @ApiProperty({ required: false, example: SwaggerExamples.User.AVATAR })
   @IsUrl()
-  avatar?: string;
+  avatar: string;
 }

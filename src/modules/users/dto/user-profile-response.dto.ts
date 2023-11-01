@@ -13,31 +13,21 @@ export class UserProfileResponseDto {
   @ApiProperty({ example: SwaggerExamples.Common.DATE })
   updatedAt: Date;
 
-  @ApiProperty({
-    example: SwaggerExamples.User.USERNAME,
-  })
+  @ApiProperty({ example: SwaggerExamples.User.USERNAME })
   @IsString()
   username: string;
 
-  @ApiProperty({
-    example: SwaggerExamples.User.EMAIL,
-  })
+  @ApiProperty({ example: SwaggerExamples.User.EMAIL })
   @IsEmail()
   email: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.ABOUT,
-  })
+  @ApiProperty({ required: false, example: SwaggerExamples.User.ABOUT })
   @Length(1, 200)
   @IsOptional()
   @IsString()
   about?: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.AVATAR,
-  })
+  @ApiProperty({ required: false, example: SwaggerExamples.User.AVATAR })
   @IsOptional()
   @IsUrl()
   avatar?: string;

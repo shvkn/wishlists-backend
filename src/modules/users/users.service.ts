@@ -42,8 +42,12 @@ export class UsersService {
       if (updateUserDto.password?.length > 0) {
         updateUserDto.password = hash(updateUserDto.password);
       }
-      await this.usersRepository.update(user.id, updateUserDto);
-      return await this.findOne(options);
+      const updated = await this.usersRepository.preload({
+        id: user.id,
+        ...updateUserDto,
+      });
+      await this.usersRepository.save(updated);
+      return updated;
     } catch (e) {
       throw new BadRequestException(e.message);
     }

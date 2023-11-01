@@ -19,18 +19,12 @@ export class UserPublicResponseDto {
   @IsString()
   username: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.ABOUT,
-  })
+  @ApiProperty({ required: false, example: SwaggerExamples.User.ABOUT })
   @Length(1, 200)
   @IsString()
   about: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.AVATAR,
-  })
+  @ApiProperty({ required: false, example: SwaggerExamples.User.AVATAR })
   @IsUrl()
   avatar: string;
 }

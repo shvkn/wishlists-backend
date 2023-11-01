@@ -4,6 +4,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsOptional,
+  IsString,
   IsUrl,
   Length,
 } from 'class-validator';
@@ -49,7 +50,7 @@ export class User {
   @ApiProperty({ example: SwaggerExamples.User.AVATAR })
   @IsUrl()
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
   @Column({ name: 'avatar', default: 'https://i.pravatar.cc/300' })
   avatar?: string;
 

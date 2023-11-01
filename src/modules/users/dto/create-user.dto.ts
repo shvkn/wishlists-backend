@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsEmpty,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-} from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
 import { SwaggerExamples } from '../../../utils/swagger.constants';
 
@@ -26,21 +19,14 @@ export class CreateUserDto {
   @IsString()
   password: string;
 
+  @ApiProperty({ required: false, example: SwaggerExamples.User.ABOUT })
   @IsOptional()
   @Length(1, 200)
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.ABOUT,
-  })
   @IsString()
   about?: string;
 
-  @ApiProperty({
-    required: false,
-    example: SwaggerExamples.User.AVATAR,
-  })
+  @ApiProperty({ required: false, example: SwaggerExamples.User.AVATAR })
   @IsUrl()
   @IsOptional()
-  @IsEmpty()
   avatar?: string;
 }

@@ -16,8 +16,17 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  register(signUpDto: SignUpUserDto): Promise<SignUpUserResponseDto> {
-    return this.usersService.create(signUpDto);
+  async register(signUpDto: SignUpUserDto): Promise<SignUpUserResponseDto> {
+    const user = await this.usersService.create(signUpDto);
+    return {
+      id: user.id,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      username: user.username,
+      email: user.email,
+      about: user.about,
+      avatar: user.avatar,
+    };
   }
 
   provideJwtTokens(user: User): SignInUserResponseDto {
