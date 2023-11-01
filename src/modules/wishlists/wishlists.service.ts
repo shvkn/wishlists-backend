@@ -57,8 +57,12 @@ export class WishlistsService {
     const { itemsId, ...data } = updateWishlistDto;
     const { id } = await this.findOne(options);
     const items: Wish[] = await Promise.all(itemsId.map(this.mapIdToWish));
-    await this.wishlistsRepository.update(id, { ...data, items });
-    return await this.findOne(options);
+    const updated = await this.wishlistsRepository.preload({
+      id,
+      ...data,
+      items,
+    });
+    return await this.wishlistsRepository.save(updated);
   }
 
   async removeOne(options: FindOneOptions<Wishlist>): Promise<Wishlist> {
