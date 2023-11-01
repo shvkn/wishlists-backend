@@ -40,8 +40,12 @@ export class WishesService {
     if (updateWishDto.price >= 0 && wish.raised > 0) {
       throw new WishPriceCantBeUpdatedException();
     }
-    await this.wishesRepository.update(wish.id, updateWishDto);
-    return await this.findOne(options);
+    const updated = await this.wishesRepository.preload({
+      id: wish.id,
+      ...updateWishDto,
+    });
+    await this.wishesRepository.save(updated);
+    return updated;
   }
 
   async delete(options: FindOneOptions<Wish>): Promise<Wish> {

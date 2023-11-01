@@ -34,10 +34,13 @@ export class OwnerGuard implements CanActivate {
       return dep.name?.match(featureName + 'Service');
     });
     const service = this.moduleRef.get(serviceRef, { strict: false });
-    const entity = await service.findOne(id);
+    const entity = await service.findOne({
+      where: { id },
+      relations: { owner: true },
+    });
     if (!entity.owner) {
       throw new BadRequestException(
-        `Wrong using of OwnerGuard. Entity "${featureName}" has no owner parameter.`,
+        `Wrong using of OwnerGuard. Entity '${featureName}' has no owner parameter.`,
       );
     }
     if (user?.id && entity.owner.id === user.id) {

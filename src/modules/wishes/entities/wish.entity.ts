@@ -35,7 +35,7 @@ export class Wish {
   @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 
-  @ApiProperty({ example: SwaggerExamples })
+  @ApiProperty({ example: SwaggerExamples.Wish.NAME })
   @IsString()
   @Length(1, 250)
   @Column({ name: 'name' })
@@ -69,10 +69,7 @@ export class Wish {
   @Column({ name: 'description' })
   description: string;
 
-  @ApiProperty({
-    type: () => Offer,
-    isArray: true,
-  })
+  @ApiProperty({ type: () => Offer, isArray: true })
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 

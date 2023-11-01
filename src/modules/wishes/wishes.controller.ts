@@ -96,17 +96,18 @@ export class WishesController {
 
   @Patch(':id')
   @ApiOperation({ description: 'Обновление подарка по ID' })
-  @UseGuards(JwtAuthGuard, OwnerGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: Wish })
   @ApiBadRequestResponse({
     description: ExceptionsMessages.PRICE_CHANGING_NOT_ALLOWED,
   })
   @ApiNotFoundResponse({ description: ExceptionsMessages.WISH_NOT_FOUND })
+  @UseGuards(JwtAuthGuard, OwnerGuard)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWishDto: UpdateWishDto,
   ): Promise<Wish> {
+    console.log({ id });
     return this.wishesService.update({ where: { id } }, updateWishDto);
   }
 
