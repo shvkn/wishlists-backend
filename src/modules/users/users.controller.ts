@@ -118,12 +118,12 @@ export class UsersController {
   async getWishes(
     @Param('username') username: string,
   ): Promise<UserWishesDto[]> {
-    const { wishes } = await this.usersService.findOne({
+    const user = await this.usersService.findOne({
       where: { username },
-      select: { wishes: true },
-      relations: { wishes: { offers: true } },
+      relations: { wishes: { offers: { user: true } } },
     });
-    return wishes;
+    console.log(user);
+    return user.wishes;
   }
 
   @Post('find')
