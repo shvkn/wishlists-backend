@@ -1,5 +1,5 @@
 {
-  "name": "kupipodariday-backend",
+  "name": "@my-vishlist/backend",
   "version": "1.0.0",
   "description": "API сервиса вишлистов",
   "author": "Anatoly Shuvakhin",
@@ -88,5 +88,6 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "packageManager": "yarn@3.5.0"
 }

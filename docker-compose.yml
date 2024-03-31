@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  database:
+    image: "postgres:12"
+    environment:
+      - POSTGRES_DB=${DB_DATABASE}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    env_file:
+      - .env
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - $DB_PORT:5432
+    networks:
+      - backend
+    restart: unless-stopped
+  backend:
+    container_name: backend
+    hostname: backend
+    env_file:
+      - .env
+    build:
+      context: ./
+    expose:
+      - $PORT
+    ports:
+      - $PORT:$PORT
+    links:
+      - database
+    depends_on:
+      - database
+    networks:
+      - backend
+    restart: unless-stopped
+volumes:
+  pg-data:
+networks:
+  backend:
